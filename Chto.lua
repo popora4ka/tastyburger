@@ -2002,7 +2002,7 @@ end
 local HEADLESS = (getgenv and getgenv().YomogiHeadless) and true or (_G.YomogiHeadless and true) or false
 
 local spawnerGui = mk("ScreenGui", {
-	Name = "YomogiScriptsGui",
+	Name = "WolokoScriptsGui",
 	ResetOnSpawn = false,
 	ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 	IgnoreGuiInset = true,
@@ -2080,7 +2080,7 @@ mk("TextLabel", {
 	Size = UDim2.new(0, 220, 0, 20),
 	Position = UDim2.new(0, 56, 0, 8),
 	BackgroundTransparency = 1,
-	Text = "Yogomi Spawner",
+	Text = "Woloko Spawner",
 	TextColor3 = THEME.Text,
 	TextSize = 17,
 	Font = Enum.Font.GothamBold,
@@ -2299,7 +2299,7 @@ mk("TextLabel", {
 	Size = UDim2.new(0, 160, 1, 0),
 	Position = UDim2.new(1, -172, 0, 0),
 	BackgroundTransparency = 1,
-	Text = "YT: Yogomi Scripts",
+	Text = "Woloko scripts on tt",
 	TextColor3 = THEME.TextDim,
 	TextSize = 12,
 	Font = Enum.Font.GothamBold,
@@ -2461,7 +2461,7 @@ end
 -- Reopen bubble + visibility toggles
 --------------------------------------------------------------------
 local bubble = mk("TextButton", {
-	Name = "YomogiBubble",
+	Name = "WolokoBubble",
 	Size = UDim2.new(0, 44, 0, 44),
 	Position = UDim2.new(0, 16, 0.5, -22),
 	BackgroundColor3 = THEME.Accent,
@@ -2857,7 +2857,7 @@ task.spawn(function()
 end)
 
 --==================================================================--
---  YOGOMI TRADE  (ported from Kryzon trade engine)
+--  Woloko (ported from Kryzon trade engine)
 --  Lets you view your items inside the game's real TradeGUI, populate
 --  your offer + the other player's offer, and run the accept flow.
 --  Entirely guarded: on any game that lacks the modded trade modules
@@ -2893,7 +2893,7 @@ do
 
 	if not (ok and ProfileData and InventoryModule and ItemModule and TSync and TradeRemotes and TradeGUI
 		and TradeGUI:FindFirstChild("Container")) then
-		warn("[Yogomi Trade] modded trade modules not found in this game — trade disabled.")
+		warn("[Woloko Trade] modded trade modules not found in this game — trade disabled.")
 	else
 	-- real spawns are available here → the engine skips its fake card
 	RealSpawnSupported = true
@@ -3293,7 +3293,7 @@ do
 	-- Trade panel UI (black theme, matches the spawner)
 	----------------------------------------------------------------
 	local tradeFrame = mk("Frame", {
-		Name = "YogomiTrade",
+		Name = "WolokoTrade",
 		Size = UDim2.new(0, 260, 0, 322),
 		Position = UDim2.new(0.5, 250, 0.5, -161),
 		BackgroundColor3 = THEME.Bg,
@@ -3418,7 +3418,7 @@ do
 		pcall(function() tradeToggle:Destroy() end)
 	end
 
-	print("[Yogomi Trade] ready — click ⇄ to open the trade panel.")
+	print("[Woloko Trade] ready — click ⇄ to open the trade panel.")
 	end
 end
 
@@ -3442,7 +3442,7 @@ end
 -- hub can drive this running engine by name. Returns ok, displayName.
 --   _G.YomogiSpawnByName("harvester")   -> partial/exact, any case
 --------------------------------------------------------------------
-_G.YomogiSpawnByName = function(query)
+_G.WolokoSpawnByName = function(query)
 	if type(query) ~= "string" or query == "" then return false, "empty" end
 	local q = query:lower():gsub("^%s+", ""):gsub("%s+$", "")
 	local e = Weapons[query] or Weapons[q]
@@ -3486,7 +3486,7 @@ _G.YomogiSpawnByName = function(query)
 end
 
 -- lets the hub confirm the engine is loaded
-_G.YomogiSpawnerLoaded = true
+_G.WolokoSpawnerLoaded = true
 
 -- (Removed the 20s hot-reload loop: re-decoding the JSON caches every
 -- 20s forever caused recurring lag spikes. The caches are read once,
@@ -3497,12 +3497,12 @@ _G.YomogiSpawnerLoaded = true
 -- prunes any that fail or fall back to a generic placeholder mesh.
 -- Run from the executor: _G.YogomiScanAll()
 --------------------------------------------------------------------
-_G.YogomiScanAll = function()
+_G.WolokoScanAll = function()
 	local genericIds = {["6600901997"] = true, ["121944778"] = true, ["6600918074"] = true, ["79401392"] = true}
 	local failIds, genericList, bigList = {}, {}, {}
 	local okCount = 0
 	local test = Instance.new("Part")
-	test.Name = "YogomiScanPart"
+	test.Name = "WolokoScanPart"
 	test.Anchored = true
 	test.CanCollide = false
 	test.Transparency = 1

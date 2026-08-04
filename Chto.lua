@@ -1,5 +1,3 @@
-print("I know you r trying to deobfuscate my code")
-print("I don't give a fuck skid")
 --==================================================================--
 --  Woloko SPAWNER
 --  (engine v5.3 — persistent inventory cards, rifle pose, gun-up fix)

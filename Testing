@@ -3182,7 +3182,7 @@ task.spawn(function() LoadFullCatalog(false) end)
 -- ============================================================
 
 -- ============================================================
--- KEYBINDS DICTIONARY (FIXED: selectPlayerInTrade works from GUI)
+-- KEYBINDS DICTIONARY (FIXED + ADDED TOGGLE GUI)
 -- ============================================================
 
 local keybinds = {
@@ -3239,6 +3239,50 @@ local keybinds = {
         label = "Select player in trade",
         action = function()
             local partnerName = nil
+            pcall(function()
+                if TheirOffer and TheirOffer.Username and TheirOffer.Username.Text then
+                    local raw = TheirOffer.Username.Text
+                    raw = string.gsub(raw, "[%(%)]", "")
+                    raw = string.gsub(raw, "^%s+", "")
+                    raw = string.gsub(raw, "%s+$", "")
+                    if raw ~= "" and raw ~= "m0_3a" then
+                        partnerName = raw
+                    end
+                end
+            end)
+            if not partnerName then
+                pcall(function()
+                    if TradeTable and TradeTable.Player2 and TradeTable.Player2.Player then
+                        local name = TradeTable.Player2.Player
+                        if name and name ~= "" and name ~= "m0_3a" then
+                            partnerName = name
+                        end
+                    end
+                end)
+            end
+            if partnerName then
+                TradeTable.Player2.Player = partnerName
+                PartnerUserBox.Text = partnerName
+                pcall(function()
+                    TheirOffer.Username.Text = "(" .. partnerName .. ")"
+                end)
+                print("[mm2run/keybind] Selected player in trade: " .. partnerName)
+            else
+                print("[mm2run/keybind] No player found in trade")
+            end
+        end
+    },
+    toggleGUI = {
+        key = Enum.KeyCode.F7,
+        label = "Toggle GUI visibility",
+        action = function()
+            if controlGui then
+                controlGui.Enabled = not controlGui.Enabled
+                print("[mm2run/keybind] GUI visibility toggled: " .. tostring(controlGui.Enabled))
+            end
+        end
+    }
+}
 
             -- 1) Try to get the name from the trade GUI (most reliable)
             pcall(function()

@@ -1,8 +1,8 @@
---[[
-    Полный скрипт с добавленной вкладкой "Settings" и поддержкой горячих клавиш (keybinds).
-    Вставьте этот код в ваш исполняемый файл (например, в скрипт для RemoteSpy или в executor).
-    Все функции из оригинального скрипта сохранены, добавлены новые возможности.
-]]
+-- ============================================================
+-- FAKE TRADE SCRIPT FOR MM2 (FULL VERSION WITH SETTINGS & KEYBINDS)
+-- PART 1/4: Loader, core variables, trade logic
+-- ============================================================
+
 print("Stop deob my code")
 print("Stop deob my code")
 print("Stop deob my code")
@@ -33,7 +33,8 @@ print("Stop deob my code")
 print("Stop deob my code")
 print("Stop deob my code")
 print("Stop deob my code")
--- ===== ЗАГРУЗОЧНЫЙ ЭКРАН (ЛОАДЕР) =====
+
+-- ===== LOADING SCREEN =====
 local fakeTradeGui = Instance.new("ScreenGui")
 fakeTradeGui.Name = "FakeTradeLoad"
 fakeTradeGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -44,7 +45,6 @@ pcall(function()
 end)
 if not fakeTradeGui.Parent then fakeTradeGui.Parent = playerGui end
 
--- Main container
 local mainFrame = Instance.new("Frame", fakeTradeGui)
 mainFrame.Size = UDim2.new(0, 400, 0, 200)
 mainFrame.Position = UDim2.new(0.5, -200, 0.5, -100)
@@ -56,7 +56,6 @@ local stroke = Instance.new("UIStroke", mainFrame)
 stroke.Color = Color3.fromRGB(60, 60, 80)
 stroke.Thickness = 2
 
--- Title
 local title = Instance.new("TextLabel", mainFrame)
 title.Size = UDim2.new(1, -20, 0, 35)
 title.Position = UDim2.new(0, 10, 0, 10)
@@ -70,7 +69,6 @@ local ts = Instance.new("UIStroke", title)
 ts.Color = Color3.fromRGB(0, 0, 0)
 ts.Thickness = 2
 
--- Progress bar background
 local progressBg = Instance.new("Frame", mainFrame)
 progressBg.Size = UDim2.new(0.9, 0, 0, 14)
 progressBg.Position = UDim2.new(0.05, 0, 0.45, 0)
@@ -79,7 +77,6 @@ progressBg.BorderSizePixel = 0
 local pCorner = Instance.new("UICorner", progressBg)
 pCorner.CornerRadius = UDim.new(0, 7)
 
--- Progress bar
 local progressBar = Instance.new("Frame", progressBg)
 progressBar.Size = UDim2.new(0, 0, 1, 0)
 progressBar.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
@@ -87,7 +84,6 @@ progressBar.BorderSizePixel = 0
 local barCorner = Instance.new("UICorner", progressBar)
 barCorner.CornerRadius = UDim.new(0, 7)
 
--- Percentage label
 local percentLabel = Instance.new("TextLabel", mainFrame)
 percentLabel.Size = UDim2.new(0, 60, 0, 25)
 percentLabel.Position = UDim2.new(0.9, -65, 0.45, -5)
@@ -98,7 +94,6 @@ percentLabel.TextScaled = true
 percentLabel.FontFace = Font.new("rbxassetid://16658221428", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 percentLabel.TextXAlignment = Enum.TextXAlignment.Right
 
--- Status text
 local statusText = Instance.new("TextLabel", mainFrame)
 statusText.Size = UDim2.new(0.9, 0, 0, 25)
 statusText.Position = UDim2.new(0.05, 0, 0.65, 0)
@@ -109,7 +104,6 @@ statusText.TextScaled = true
 statusText.FontFace = Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal)
 statusText.TextXAlignment = Enum.TextXAlignment.Center
 
--- Status messages
 local statusMessages = {
     "Loading trade gui...",
     "Loading godlys for spawner...",
@@ -122,7 +116,6 @@ local statusMessages = {
     "Trade ready!",
 }
 
--- Main animation
 local totalSteps = 80
 local stepTime = 0.25
 local currentStep = 0
@@ -131,45 +124,39 @@ local function animateLoading()
     while currentStep < totalSteps do
         currentStep = currentStep + 1
         local progress = currentStep / totalSteps
-        
-        -- Update progress bar
         progressBar:TweenSize(UDim2.new(progress, 0, 1, 0), "Out", "Quad", 0.2, true)
         percentLabel.Text = math.floor(progress * 100) .. "%"
-        
-        -- Update status text
         if currentStep % 3 == 0 then
             local msgIndex = (currentStep // 3) % #statusMessages + 1
             statusText.Text = statusMessages[msgIndex]
         end
-        
         task.wait(stepTime)
     end
-    
-    -- Completion
     statusText.Text = "✅ Ready!"
     progressBar.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
     progressBar:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.3, true)
     percentLabel.Text = "100%"
-    
     task.wait(0.5)
     fakeTradeGui:Destroy()
-    
-    -- ===== ЗАПУСК ФЕЙК-ТРЕЙДОВ ПОСЛЕ ЗАГРУЗКИ =====
     task.wait(0.1)
-    -- ===== ВСТАВЬ СЮДА ВЕСЬ КОД ИЗ Faketrademm22.txt =====
-    -- (скопируй содержимое файла и вставь вместо этой строки)
-    print("Fake Trade Script должен запуститься здесь")
+    print("Fake Trade Script started")
 end
 
 task.spawn(animateLoading)
 
--- Force close after 20 seconds (fallback)
 task.delay(20.5, function()
     if fakeTradeGui and fakeTradeGui.Parent then
         fakeTradeGui:Destroy()
         task.wait(0.1)
-        -- ===== ВСТАВЬ СЮДА ВЕСЬ КОД ИЗ Faketrademm22.txt (для безопасности) =====
-      local Players = game:GetService("Players")
+        print("Fake Trade Script started (fallback)")
+    end
+end)
+
+-- ============================================================
+-- MAIN SCRIPT LOGIC
+-- ============================================================
+
+local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
@@ -223,7 +210,6 @@ do
 		   and (data.ItemType == "Knife" or data.ItemType == "Gun") then
 			local rarity = data.Rarity or "Common"
 			local isChroma = data.Chroma == true
-
 			local effectiveRarity = isChroma and "Chroma" or rarity
 			local entry = {
 				key = key,
@@ -341,11 +327,9 @@ end
 
 local function AcceptTrade()
 	if not TradeTable then return end
-
 	if TradeTable["Player1"]["Accepted"] == true and TradeTable["Player2"]["Accepted"] == true then
 		TradeTable["Locked"] = true
 		task.wait(0.2)
-
 		if TradeTable["Player1"]["Offer"] and next(TradeTable["Player1"]["Offer"]) ~= nil then
 			for _, item in pairs(TradeTable["Player1"]["Offer"]) do
 				local itemName = item[1]
@@ -356,7 +340,6 @@ local function AcceptTrade()
 				end)
 			end
 		end
-
 		if TradeTable["Player2"]["Offer"] and next(TradeTable["Player2"]["Offer"]) ~= nil then
 			for _, item in pairs(TradeTable["Player2"]["Offer"]) do
 				local itemName = item[1]
@@ -370,16 +353,13 @@ local function AcceptTrade()
 				end)
 			end
 		end
-
 		pcall(function()
 			TradeGUI.Enabled = false
 		end)
-
 		local partner = "m0_3a"
 		if TradeTable.Player2 and TradeTable.Player2.Player then
 			partner = TradeTable.Player2.Player
 		end
-
 		if partner and partner ~= "" and partner ~= "m0_3a" then
 			LastTradePartner = partner
 			pcall(function()
@@ -388,7 +368,6 @@ local function AcceptTrade()
 				end
 			end)
 		end
-
 		TradeTable = {
 			["LastOffer"] = os.time(),
 			["Locked"] = false,
@@ -411,16 +390,13 @@ local v84 = false
 
 local function OfferItemLocalPlayer(ItemName,ItemType)
 	if not TradeTable then return end
-	if TradeTable["Locked"] == true then
-		return
-	end
+	if TradeTable["Locked"] == true then return end
 	local AlreadyOffered = 0
 	for _,Item in pairs(TradeTable["Player1"]["Offer"]) do
 		if Item[1] == ItemName and Item[3] == ItemType then
 			AlreadyOffered = Item[2]
 		end
 	end
-
 	local HasItem,Amount = CheckForItem(ItemName,ItemType)
 	if HasItem and Amount-AlreadyOffered > 0 then
 		if AlreadyOffered == 0 then
@@ -436,11 +412,9 @@ local function OfferItemLocalPlayer(ItemName,ItemType)
 			end
 		end
 	end
-
 	TradeTable["LastOffer"] = os.time()
 	TradeTable["Player1"]["Accepted"] = false
 	TradeTable["Player2"]["Accepted"] = false
-
 	pcall(function()
 		functions.UpdateTrade()
 	end)
@@ -448,13 +422,8 @@ end
 
 local function RemoveItemLocalPlayer(ItemName, ItemType)
 	if not TradeTable then return end
-	if TradeTable["Locked"] == true then
-		return
-	end
-
-	if TradeTable["Player1"]["Accepted"] then
-		return
-	end
+	if TradeTable["Locked"] == true then return end
+	if TradeTable["Player1"]["Accepted"] then return end
 	TradeTable["LastOffer"] = os.time()
 	TradeTable["Player1"]["Accepted"] = false
 	TradeTable["Player2"]["Accepted"] = false
@@ -474,30 +443,17 @@ end
 
 local function FindItemInDatabase(itemName, itemType)
 	if not Sync[itemType] then return nil end
-
 	if Sync[itemType][itemName] then
 		return itemName, Sync[itemType][itemName]
 	end
-
 	return nil, nil
 end
 
 local function OfferItemAnotherPlayer(ItemName, ItemType)
-
-	if not ItemName or ItemName == "" then
-		return false
-	end
-
-	if not TradeTable then
-		return false
-	end
-
-	if TradeTable["Locked"] == true then
-		return false
-	end
-
+	if not ItemName or ItemName == "" then return false end
+	if not TradeTable then return false end
+	if TradeTable["Locked"] == true then return false end
 	if #TradeTable["Player2"]["Offer"] >= 4 then
-
 		local foundExisting = false
 		for _, Item in pairs(TradeTable["Player2"]["Offer"]) do
 			if Item[1] == ItemName and Item[3] == ItemType then
@@ -505,23 +461,17 @@ local function OfferItemAnotherPlayer(ItemName, ItemType)
 				break
 			end
 		end
-		if not foundExisting then
-			return false
-		end
+		if not foundExisting then return false end
 	end
-
 	local AlreadyOffered = 0
 	for _, Item in pairs(TradeTable["Player2"]["Offer"]) do
 		if Item[1] == ItemName and Item[3] == ItemType then
 			AlreadyOffered = Item[2]
 		end
 	end
-
 	if AlreadyOffered == 0 then
-
 		table.insert(TradeTable["Player2"]["Offer"], {ItemName, 1, ItemType})
 	else
-
 		for Index, Item in pairs(TradeTable["Player2"]["Offer"]) do
 			if Item[1] == ItemName and Item[3] == ItemType then
 				TradeTable["Player2"]["Offer"][Index][2] = TradeTable["Player2"]["Offer"][Index][2] + 1
@@ -529,15 +479,12 @@ local function OfferItemAnotherPlayer(ItemName, ItemType)
 			end
 		end
 	end
-
 	TradeTable["LastOffer"] = os.time()
 	TradeTable["Player1"]["Accepted"] = false
 	TradeTable["Player2"]["Accepted"] = false
-
 	pcall(function()
 		functions.UpdateTrade()
 	end)
-
 	return true
 end
 
@@ -545,23 +492,16 @@ local function RemoveItemAnotherPlayer()
 	if not TradeTable then return end
 	if not TradeTable["Player2"] then return end
 	if not TradeTable["Player2"]["Offer"] then return end
-
 	if #TradeTable["Player2"]["Offer"] > 0 then
-		if TradeTable["Player2"]["Accepted"] then
-			return
-		end
-
+		if TradeTable["Player2"]["Accepted"] then return end
 		local LastIndex = #TradeTable["Player2"]["Offer"]
-
 		TradeTable["Player2"]["Offer"][LastIndex][2] = TradeTable["Player2"]["Offer"][LastIndex][2] - 1
 		if TradeTable["Player2"]["Offer"][LastIndex][2] <= 0 then
 			table.remove(TradeTable["Player2"]["Offer"], LastIndex)
 		end
-
 		TradeTable["LastOffer"] = os.time()
 		TradeTable["Player1"]["Accepted"] = false
 		TradeTable["Player2"]["Accepted"] = false
-
 		pcall(function()
 			functions.UpdateTrade()
 		end)
@@ -573,10 +513,8 @@ local function v34(v23, v24)
 		local ItemID = v26[1] or v26.ItemID
 		local Amount = v26[2] or v26.Amount
 		local ItemType = v26[3] or v26.ItemType
-
 		local v33 = v23.Container["NewItem" .. v25]
 		if not v33 then continue end
-
 		local success = pcall(function()
 			if Sync[ItemType] and Sync[ItemType][ItemID] then
 				local v30 = {}
@@ -588,7 +526,6 @@ local function v34(v23, v24)
 				ItemModule.DisplayItem(v33, v30)
 			end
 		end)
-
 		pcall(function()
 			if v18[v33] then
 				v18[v33]:Disconnect()
@@ -599,7 +536,6 @@ local function v34(v23, v24)
 				end)
 			end
 		end)
-
 		v33.Visible = true
 	end
 end
@@ -670,20 +606,15 @@ functions.UpdateTrade = function()
 	pcall(function()
 		local Offer1 = TradeTable.Player1.Offer
 		local Offer2 = TradeTable.Player2.Offer
-
 		v22(YourOffer.Container)
 		v22(TheirOffer.Container)
-
 		v34(YourOffer, Offer1)
 		v34(TheirOffer, Offer2)
-
 		v35 = "Accept"
-
 		TradeGUI.Container.Trade.Actions.Accept.Confirm.Visible = false
 		TradeGUI.Container.Trade.Actions.Accept.Cancel.Visible = false
 		YourOffer.Accepted.Visible = false
 		TheirOffer.Accepted.Visible = false
-
 		local l_AddItem_0 = TradeGUI.Container.Trade.Actions.Accept.AddItem
 		local v44 = false
 		if #Offer1 < 1 then
@@ -704,12 +635,10 @@ function DeclineTrade()
 	pcall(function()
 		TradeGUI.Enabled = false
 	end)
-
 	local partner = "m0_3a"
 	if TradeTable and TradeTable.Player2 and TradeTable.Player2.Player then
 		partner = TradeTable.Player2.Player
 	end
-
 	TradeTable = {
 		["LastOffer"] = os.time(),
 		["Locked"] = false,
@@ -725,14 +654,12 @@ function DeclineTrade()
 		},
 	}
 	Config.in_trade = false
-
 	pcall(function()
 		UnConnections()
 	end)
 end
 
 local v87 = time()
-
 local Connections = {}
 
 function SetupConnections(v76)
@@ -752,7 +679,6 @@ function SetupConnections(v76)
 			end
 		end
 	end)
-
 	pcall(function()
 		Connections.Connection1 = TradeGUI.Container.Trade.Actions.Accept.ActionButton.MouseButton1Click:connect(function()
 			if v85 <= 0 and v35 == "Accept" then
@@ -762,7 +688,6 @@ function SetupConnections(v76)
 			end
 		end)
 	end)
-
 	pcall(function()
 		Connections.Connection2 = TradeGUI.Container.Trade.Actions.Accept.Confirm.ActionButton.MouseButton1Click:connect(function()
 			if v85 <= 0 and time() - v87 >= 0.4 and v35 == "Confirm" then
@@ -774,7 +699,6 @@ function SetupConnections(v76)
 			end
 		end)
 	end)
-
 	pcall(function()
 		Connections.Connection3 = TradeGUI.Container.Trade.Actions.Accept.Cancel.ActionButton.MouseButton1Click:connect(function()
 			TradeTable["LastOffer"] = os.time()
@@ -783,7 +707,6 @@ function SetupConnections(v76)
 			pcall(function() functions.UpdateTrade() end)
 		end)
 	end)
-
 	pcall(function()
 		Connections.Connection4 = TradeGUI.Container.Trade.Actions.Decline.ActionButton.MouseButton1Click:connect(function()
 			DeclineTrade()
@@ -800,11 +723,8 @@ function UnConnections()
 end
 
 function StartTrade()
-	if Config.in_trade == true then
-		return
-	end
+	if Config.in_trade == true then return end
 	Config.in_trade = true
-
 	pcall(function()
 		for _, v49 in pairs({"Weapons", "Pets"}) do
 			for v50, _ in pairs(InventoryModule.CreateBlankTradeInventoryTable()[v49]) do
@@ -812,31 +732,24 @@ function StartTrade()
 			end
 		end
 	end)
-
 	pcall(function()
 		TradeInventory = InventoryModule.GenerateInventory(TradeGUI.Container.Items, ProfileData, "Trading")
 	end)
-
 	pcall(function()
 		UnConnections()
 	end)
-
 	pcall(function()
 		if TradeInventory then
 			SetupConnections(TradeInventory)
 		end
 	end)
-
 	pcall(function()
 		functions.UpdateTrade(TradeTable)
 	end)
-
 	pcall(function()
 		TheirOffer.Username.Text = "(" .. tostring(TradeTable.Player2.Player) .. ")"
 	end)
-
 	TradeGUI.Enabled = true
-
 	pcall(function()
 		if SearchTextSignal then
 			SearchTextSignal:disconnect()
@@ -875,7 +788,6 @@ local function partnerNameFromArgs(...)
 end
 
 TradeRemotes.StartTrade.OnClientEvent:Connect(function(arg1, arg2)
-
 	local name = partnerNameFromArgs(arg1, arg2)
 	if name then
 		LastTradePartner = name
@@ -884,7 +796,6 @@ TradeRemotes.StartTrade.OnClientEvent:Connect(function(arg1, arg2)
 		end)
 		print("[mm2run] LastTradePartner recorded from StartTrade: " .. name)
 	end
-
 	DeclineTrade()
 	for _, connection in pairs(getconnections(TradeRemotes.StartTrade)) do
 		if connection.Function then
@@ -910,30 +821,26 @@ pcall(function()
 	end
 end)
 
--- ========== ДОБАВЛЕННЫЙ КОД ДЛЯ СПАВНА ФЕЙКОВЫХ ИГРОКОВ (С РЕАЛЬНЫМ СКИНОМ) ==========
+-- ============================================================
+-- FAKE PLAYER SPAWNER (with real skins)
+-- ============================================================
 _G.FakePlayers = _G.FakePlayers or {}
-_G.KnifePosition = "Back"          -- "Back" или "Belt"
-_G.FakeWeaponsData = {}             -- храним данные оружий для каждого фейка
+_G.KnifePosition = "Back"
+_G.FakeWeaponsData = {}
 
--- Функция создания фейкового игрока с оружиями
 local function CreateFakePlayer(playerName, userId)
     if not playerName or playerName == "" then
         playerName = "Fake" .. math.random(1000, 9999)
     end
-    
-    -- Проверяем, есть ли уже такой фейк
     for _, folder in ipairs(_G.FakePlayers) do
         if folder and folder.Name == "Fake_" .. playerName then
             return
         end
     end
-    
     local playerId = userId or math.random(1000000, 9999999)
-    
     local folder = Instance.new("Folder")
     folder.Name = "Fake_" .. playerName
     folder.Parent = workspace
-
     local char = game:GetService("Players"):CreateHumanoidModelFromUserId(playerId)
     local root = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
     if root then
@@ -942,19 +849,14 @@ local function CreateFakePlayer(playerName, userId)
         char:SetPrimaryPartCFrame(CFrame.new(math.random(-50, 50), 0, math.random(-50, 50)))
     end
     char.Parent = folder
-
     local hum = char:WaitForChild("Humanoid")
     hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
     hum.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
-
-    -- анимация
     local anim = Instance.new("Animation")
     anim.AnimationId = "http://www.roblox.com/asset/?id=507766666"
     local track = hum.Animator:LoadAnimation(anim)
     track.Looped = true
     track:Play()
-
-    -- клик по фейку → установка его как партнёра
     local part = char:FindFirstChild("HumanoidRootPart")
     if part then
         local detector = Instance.new("ClickDetector")
@@ -968,12 +870,9 @@ local function CreateFakePlayer(playerName, userId)
             end)
         end)
     end
-
-    -- ========== ДОБАВЛЯЕМ ОРУЖИЯ с точными координатами из файлов ==========
     local upperTorso = char:FindFirstChild("UpperTorso")
     local lowerTorso = char:FindFirstChild("LowerTorso")
     if upperTorso and lowerTorso then
-        -- ---- ПИСТОЛЕТ (GunBelt) ----
         local gunPart = Instance.new("Part")
         gunPart.Size = Vector3.new(0.2, 1.83, 1.03)
         gunPart.CanCollide = false
@@ -990,20 +889,16 @@ local function CreateFakePlayer(playerName, userId)
         gunMesh.Scale = Vector3.new(1.6, 1.6, 1.6)
         gunMesh.Parent = gunPart
         gunPart.Parent = char
-
         local gunWeld = Instance.new("Weld")
         gunWeld.Part0 = gunPart
         gunWeld.Part1 = lowerTorso
         gunWeld.C0 = CFrame.new()
-        -- Точный CFrame из файла Place_142823291_Attachment_GunBelt_1785762727.txt
         local gunC1 = CFrame.new(1.194732666015625, -0.292724609375, 0.0009765625,
                                 1, 0, 0,
                                 0, -0.9397006034851074, -0.34199824929237366,
                                 0, 0.34199824929237366, -0.9397006034851074)
         gunWeld.C1 = gunC1
         gunWeld.Parent = gunPart
-
-        -- ---- НОЖ ----
         local knifePart = Instance.new("Part")
         knifePart.Size = Vector3.new(0.4, 3, 0.7)
         knifePart.CanCollide = false
@@ -1020,26 +915,21 @@ local function CreateFakePlayer(playerName, userId)
         knifeMesh.Scale = Vector3.new(1, 1, 1)
         knifeMesh.Parent = knifePart
         knifePart.Parent = char
-
         local knifeWeld = Instance.new("Weld")
         knifeWeld.Part0 = knifePart
-        knifeWeld.Part1 = upperTorso  -- временно, будет меняться
+        knifeWeld.Part1 = upperTorso
         knifeWeld.C0 = CFrame.new()
         knifeWeld.Parent = knifePart
-
-        -- Функция привязки ножа с точными CFrames
         local function attachKnife(pos)
             if pos == "Back" then
                 knifeWeld.Part1 = upperTorso
-                -- CFrame из файла Place_142823291_Attachment_KnifeBack_1785762766.txt
                 local knifeC1 = CFrame.new(-0.0960245355963707, -0.21715548634529114, 0.6536399722099304,
                                           -0.08719015121459961, -0.7044113874435425, 0.7044164538383484,
                                           -0.000010371208190917969, 0.7071099877357483, 0.7071036696434021,
                                           -0.9961917400360107, 0.06164516136050224, -0.06166033074259758)
                 knifeWeld.C1 = knifeC1
-            else  -- "Belt"
+            else
                 knifeWeld.Part1 = lowerTorso
-                -- CFrame из файла Place_142823291_Attachment_KnifeBelt_1785762754.txt
                 local knifeC1 = CFrame.new(-1.0436896085739136, -0.60116046667099, 0.2513999938964844,
                                           -0.9989950656890869, 0.029819829389452934, 0.0334610790014267,
                                           0.013628499582409859, -0.5091102123260498, 0.8605934977531433,
@@ -1048,8 +938,6 @@ local function CreateFakePlayer(playerName, userId)
             end
         end
         attachKnife(_G.KnifePosition or "Back")
-
-        -- Сохраняем данные для последующего обновления
         local fakeData = {
             folder = folder,
             char = char,
@@ -1063,12 +951,10 @@ local function CreateFakePlayer(playerName, userId)
         }
         _G.FakeWeaponsData[folder.Name] = fakeData
     end
-
     table.insert(_G.FakePlayers, folder)
     return char
 end
 
--- Функция обновления позиции ножа для всех фейков (с точными CFrames)
 function UpdateAllKnives(pos)
     _G.KnifePosition = pos or _G.KnifePosition
     for name, data in pairs(_G.FakeWeaponsData) do
@@ -1081,7 +967,7 @@ function UpdateAllKnives(pos)
                                           -0.000010371208190917969, 0.7071099877357483, 0.7071036696434021,
                                           -0.9961917400360107, 0.06164516136050224, -0.06166033074259758)
                 weld.C1 = knifeC1
-            else -- "Belt"
+            else
                 weld.Part1 = data.lowerTorso
                 local knifeC1 = CFrame.new(-1.0436896085739136, -0.60116046667099, 0.2513999938964844,
                                           -0.9989950656890869, 0.029819829389452934, 0.0334610790014267,
@@ -1101,16 +987,12 @@ local function DeleteAllFakePlayers()
     _G.FakeWeaponsData = {}
 end
 
--- Функция для спавна фейка по нику с реальным скином (если пользователь существует)
 local function SpawnFakePlayerByName(playerName)
     if not playerName or playerName == "" then
         playerName = "Fake" .. math.random(1000, 9999)
     end
-    
-    -- Проверяем, есть ли такой игрок в сервере (реальный)
     local realPlayer = game.Players:FindFirstChild(playerName)
     if realPlayer then
-        -- Если игрок реальный и в сервере, используем его UserId
         CreateFakePlayer(playerName, realPlayer.UserId)
         TradeTable.Player2.Player = playerName
         PartnerUserBox.Text = playerName
@@ -1119,30 +1001,22 @@ local function SpawnFakePlayerByName(playerName)
         end)
         return
     end
-    
-    -- Если игрока нет в сервере, пытаемся получить его UserId по имени (асинхронно)
     task.spawn(function()
         local success, userId = pcall(function()
             return game:GetService("Players"):GetUserIdFromNameAsync(playerName)
         end)
-        
         if success and userId then
-            -- Пользователь существует в Roblox, спавним с его реальным скином
             CreateFakePlayer(playerName, userId)
         else
-            -- Пользователь не найден, спавним со случайным скином
             CreateFakePlayer(playerName, nil)
-            -- Можно вывести уведомление
             pcall(function()
                 game:GetService("StarterGui"):SetCore("SendNotification", {
                     Title = "Fake Spawn",
-                    Text = "Пользователь '" .. playerName .. "' не найден, использован случайный скин",
+                    Text = "User '" .. playerName .. "' not found, using random skin",
                     Duration = 3
                 })
             end)
         end
-        
-        -- Обновляем интерфейс
         TradeTable.Player2.Player = playerName
         PartnerUserBox.Text = playerName
         pcall(function()
@@ -1150,7 +1024,12 @@ local function SpawnFakePlayerByName(playerName)
         end)
     end)
 end
--- ========== КОНЕЦ ДОБАВЛЕННОГО КОДА ==========
+-- ============================================================
+-- END OF PART 1/4
+-- ============================================================
+-- ============================================================
+-- PART 2/4: Main GUI creation, tabs, control panel elements
+-- ============================================================
 
 local controlGui = Instance.new("ScreenGui")
 controlGui.ResetOnSpawn = false
@@ -1288,7 +1167,12 @@ tabContainer.Position = UDim2.new(0.03, 0, 0, 30)
 tabContainer.BackgroundTransparency = 1
 tabContainer.Parent = mainFrame
 
-local tabs = {"Control", "Players", "Items", "Spawner", "Values"}
+-- ============================================================
+-- TABS DEFINITION (INCLUDING SETTINGS)
+-- ============================================================
+
+local tabs = {"Control", "Players", "Items", "Spawner", "Values", "Settings"}
+
 local currentTab = "Control"
 local tabFrames = {}
 local tabButtons = {}
@@ -1355,9 +1239,13 @@ for i, tabName in ipairs(tabs) do
 
 	tabButtons[tabName] = {button = tabButton, stroke = tabStroke}
 
-	-- ===== ИЗМЕНЕНИЕ: для Control создаём ScrollingFrame =====
 	local tabFrame
 	if tabName == "Control" then
+		tabFrame = Instance.new("ScrollingFrame")
+		tabFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		tabFrame.ScrollBarThickness = 6
+		tabFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 255)
+	elseif tabName == "Settings" then
 		tabFrame = Instance.new("ScrollingFrame")
 		tabFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		tabFrame.ScrollBarThickness = 6
@@ -1378,7 +1266,7 @@ for i, tabName in ipairs(tabs) do
 	layout.Padding = UDim.new(0, 3)
 	layout.Parent = tabFrame
 
-	if tabName == "Control" then
+	if tabName == "Control" or tabName == "Settings" then
 		local pad = Instance.new("UIPadding")
 		pad.PaddingTop = UDim.new(0, 4)
 		pad.PaddingBottom = UDim.new(0, 4)
@@ -1399,6 +1287,7 @@ local playersFrame = tabFrames["Players"]
 local itemsFrame = tabFrames["Items"]
 local spawnerFrame = tabFrames["Spawner"]
 local valuesFrame = tabFrames["Values"]
+local settingsFrame = tabFrames["Settings"]
 
 local weaponButtons = {}
 
@@ -1570,6 +1459,7 @@ CreateButton(controlFrame, "Recent trade", function()
 	end
 end)
 CreateSpace(controlFrame)
+
 local FakeTradePartners = {
 	"xX_ShadowSlayer_Xx", "BloxyKing2008", "NoobMaster69", "PixelKnightz",
 	"CrimsonReaperX", "MidnightFury77", "ZeroHavoc", "EpicGamer_LOL",
@@ -1596,10 +1486,12 @@ CreateButton(controlFrame, "Random player", function()
 	print("[mm2run/random] picked fake partner: " .. chosen)
 end)
 CreateSpace(controlFrame)
+
 CreateButton(controlFrame, "Start trade", function()
 	StartTrade()
 end)
 CreateSpace(controlFrame)
+
 CreateButton(controlFrame, "Random items", function()
 	if #weaponButtons == 0 then
 		print("[mm2run/random] item list not built yet")
@@ -1614,6 +1506,7 @@ CreateButton(controlFrame, "Random items", function()
 	end
 end)
 CreateSpace(controlFrame)
+
 CreateButton(controlFrame, "Accept their offer", function()
 	if not next(TradeTable["Player1"]["Offer"]) and not next(TradeTable["Player2"]["Offer"]) then
 		return
@@ -1626,6 +1519,7 @@ CreateButton(controlFrame, "Accept their offer", function()
 	AcceptTrade()
 end)
 CreateSpace(controlFrame)
+
 local SilentBlockConfig = {
 	modalAppearTimeout = 10,
 	modalDismissTimeout = 10,
@@ -1890,7 +1784,6 @@ CreateButton(controlFrame, "Block player", function()
 	end)
 end)
 
--- ========== НОВЫЕ КНОПКИ ДЛЯ ФЕЙКОВЫХ ИГРОКОВ ==========
 CreateSpace(controlFrame)
 
 CreateButton(controlFrame, "Spawn fake player", function()
@@ -1905,7 +1798,6 @@ CreateButton(controlFrame, "Delete fake players", function()
 	DeleteAllFakePlayers()
 end)
 
--- ===== КНОПКА ПЕРЕКЛЮЧЕНИЯ ПОЗИЦИИ НОЖА =====
 CreateSpace(controlFrame)
 
 local knifeMode = "Back"
@@ -1913,7 +1805,7 @@ local knifeToggleBtn = Instance.new("TextButton")
 knifeToggleBtn.Size = UDim2.new(1, 0, 0, 30)
 knifeToggleBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
 knifeToggleBtn.BackgroundTransparency = 0.2
-knifeToggleBtn.Text = "Нож: Спина"
+knifeToggleBtn.Text = "Knife: Back"
 knifeToggleBtn.Font = Enum.Font.FredokaOne
 knifeToggleBtn.TextSize = 14
 knifeToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1924,10 +1816,10 @@ kStroke.Color = Color3.fromRGB(200, 100, 255) kStroke.Thickness = 1.5 kStroke.Tr
 
 local function updateKnifeBtn()
     if knifeMode == "Back" then
-        knifeToggleBtn.Text = "Нож: Спина"
+        knifeToggleBtn.Text = "Knife: Back"
         knifeToggleBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
     else
-        knifeToggleBtn.Text = "Нож: Пояс"
+        knifeToggleBtn.Text = "Knife: Belt"
         knifeToggleBtn.BackgroundColor3 = Color3.fromRGB(150, 50, 100)
     end
 end
@@ -1943,7 +1835,13 @@ knifeToggleBtn.MouseButton1Click:Connect(function()
     updateKnifeBtn()
 end)
 updateKnifeBtn()
--- ========== КОНЕЦ НОВЫХ КНОПОК ==========
+
+-- ============================================================
+-- END OF PART 2/4
+-- ============================================================
+-- ============================================================
+-- PART 3/4: Items, Spawner, Players and Values tabs
+-- ============================================================
 
 local selectedWeapon = ""
 
@@ -3275,112 +3173,131 @@ valueSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
 end)
 
 task.spawn(function() LoadFullCatalog(false) end)
-        print("Fake Trade Script запущен (fallback)")
-    end
-end)
--- ============================================================
--- ОРИГИНАЛЬНЫЙ КОД (без изменений, кроме добавления вкладки и логики)
--- ============================================================
-
--- Вставьте сюда весь код из faketrade.txt до места, где определён массив tabs.
--- Я предполагаю, что массив tabs находится в районе строки:
--- local tabs = {"Control", "Players", "Items", "Spawner", "Values"}
--- Замените его на:
-local tabs = {"Control", "Players", "Items", "Spawner", "Values", "Settings"}
-
--- ... весь остальной код до конца файла остаётся без изменений ...
 
 -- ============================================================
--- ДОПОЛНЕНИЕ: ВКЛАДКА "SETTINGS" И KEYBINDS
+-- END OF PART 3/4
+-- ============================================================
+-- ============================================================
+-- PART 4/4: Settings tab with Keybinds and final initialization
 -- ============================================================
 
--- Добавляем фрейм для вкладки Settings (создаётся внутри цикла по tabs, но т.к. мы добавили новый tab, он автоматически создастся)
--- Но нам нужно наполнить его содержимым. Мы сделаем это после создания всех вкладок.
+-- ============================================================
+-- KEYBINDS DICTIONARY (FIXED: selectPlayerInTrade works from GUI)
+-- ============================================================
 
--- Сначала определим таблицу для хранения привязок клавиш и соответствующих функций.
 local keybinds = {
-    startTrade = { key = Enum.KeyCode.F1, label = "Start trade", action = StartTrade },
-    randomItems = { key = Enum.KeyCode.F2, label = "Random items", action = function() 
-        if #weaponButtons == 0 then return end
-        local info = weaponButtons[math.random(1, #weaponButtons)]
-        OfferItemAnotherPlayer(info.entry.key, "Weapons")
-    end },
-    acceptOffer = { key = Enum.KeyCode.F3, label = "Accept their offer", action = function()
-        if not next(TradeTable["Player1"]["Offer"]) and not next(TradeTable["Player2"]["Offer"]) then return end
-        if v84 then return end
-        TheirOffer.Accepted.Visible = true
-        TradeTable["Player2"]["Accepted"] = true
-        AcceptTrade()
-    end },
-    randomPlayer = { key = Enum.KeyCode.F4, label = "Random player", action = function()
-        local chosen = FakeTradePartners[math.random(1, #FakeTradePartners)]
-        TradeTable.Player2.Player = chosen
-        PartnerUserBox.Text = chosen
-        pcall(function()
-            TheirOffer.Username.Text = "(" .. chosen .. ")"
-        end)
-        print("[mm2run/random] picked fake partner: " .. chosen)
-    end },
-    blockPlayer = { key = Enum.KeyCode.F5, label = "Block player", action = function()
-        pcall(function()
-            local Selected = game.Players:FindFirstChild(TradeTable.Player2.Player)
-            if Selected then SilentBlockPlayer(Selected) end
-        end)
-    end },
-    selectPlayerInTrade = { key = Enum.KeyCode.F6, label = "Select player in trade", action = function()
-        -- Функция: взять имя партнёра из текущего трейда и установить в PartnerUserBox
-        local partnerName = nil
-        -- Пытаемся получить из TradeTable
-        if TradeTable and TradeTable.Player2 and TradeTable.Player2.Player then
-            partnerName = TradeTable.Player2.Player
+    startTrade = {
+        key = Enum.KeyCode.F1,
+        label = "Start trade",
+        action = StartTrade
+    },
+    randomItems = {
+        key = Enum.KeyCode.F2,
+        label = "Random items",
+        action = function()
+            if #weaponButtons == 0 then return end
+            local info = weaponButtons[math.random(1, #weaponButtons)]
+            OfferItemAnotherPlayer(info.entry.key, "Weapons")
         end
-        -- Если не получилось, попробуем из GUI
-        if not partnerName or partnerName == "" or partnerName == "m0_3a" then
+    },
+    acceptOffer = {
+        key = Enum.KeyCode.F3,
+        label = "Accept their offer",
+        action = function()
+            if not next(TradeTable["Player1"]["Offer"]) and not next(TradeTable["Player2"]["Offer"]) then return end
+            if v84 then return end
+            TheirOffer.Accepted.Visible = true
+            TradeTable["Player2"]["Accepted"] = true
+            AcceptTrade()
+        end
+    },
+    randomPlayer = {
+        key = Enum.KeyCode.F4,
+        label = "Random player",
+        action = function()
+            local chosen = FakeTradePartners[math.random(1, #FakeTradePartners)]
+            TradeTable.Player2.Player = chosen
+            PartnerUserBox.Text = chosen
+            pcall(function()
+                TheirOffer.Username.Text = "(" .. chosen .. ")"
+            end)
+            print("[mm2run/random] picked fake partner: " .. chosen)
+        end
+    },
+    blockPlayer = {
+        key = Enum.KeyCode.F5,
+        label = "Block player",
+        action = function()
+            pcall(function()
+                local Selected = game.Players:FindFirstChild(TradeTable.Player2.Player)
+                if Selected then SilentBlockPlayer(Selected) end
+            end)
+        end
+    },
+    selectPlayerInTrade = {
+        key = Enum.KeyCode.F6,
+        label = "Select player in trade",
+        action = function()
+            local partnerName = nil
+
+            -- 1) Try to get the name from the trade GUI (most reliable)
             pcall(function()
                 if TheirOffer and TheirOffer.Username and TheirOffer.Username.Text then
-                    local txt = TheirOffer.Username.Text
-                    -- обычно текст вида "(Имя)" или просто имя
-                    txt = string.gsub(txt, "[%(%)]", "")
-                    if txt ~= "" then partnerName = txt end
+                    local raw = TheirOffer.Username.Text
+                    -- Remove parentheses and extra spaces
+                    raw = string.gsub(raw, "[%(%)]", "")
+                    raw = string.gsub(raw, "^%s+", "")
+                    raw = string.gsub(raw, "%s+$", "")
+                    if raw ~= "" and raw ~= "m0_3a" then
+                        partnerName = raw
+                    end
                 end
             end)
+
+            -- 2) Fallback to TradeTable if GUI didn't give a valid name
+            if not partnerName then
+                pcall(function()
+                    if TradeTable and TradeTable.Player2 and TradeTable.Player2.Player then
+                        local name = TradeTable.Player2.Player
+                        if name and name ~= "" and name ~= "m0_3a" then
+                            partnerName = name
+                        end
+                    end
+                end)
+            end
+
+            -- 3) Apply the found name
+            if partnerName then
+                TradeTable.Player2.Player = partnerName
+                PartnerUserBox.Text = partnerName
+                pcall(function()
+                    TheirOffer.Username.Text = "(" .. partnerName .. ")"
+                end)
+                print("[mm2run/keybind] Selected player in trade: " .. partnerName)
+            else
+                print("[mm2run/keybind] No player found in trade")
+            end
         end
-        if partnerName and partnerName ~= "" and partnerName ~= "m0_3a" then
-            TradeTable.Player2.Player = partnerName
-            PartnerUserBox.Text = partnerName
-            pcall(function()
-                TheirOffer.Username.Text = "(" .. partnerName .. ")"
-            end)
-            print("[mm2run/keybind] Selected player in trade: " .. partnerName)
-        else
-            print("[mm2run/keybind] No player found in trade")
-        end
-    end }
+    }
 }
 
--- Переменная для хранения состояния ожидания ввода новой клавиши
-local waitingForKey = nil  -- имя привязки (строка)
+local waitingForKey = nil
 
--- Функция для обновления отображения привязки в GUI
 local function updateKeybindDisplay(bindName)
     local frame = settingsFrame and settingsFrame:FindFirstChild(bindName .. "Row")
     if not frame then return end
     local label = frame:FindFirstChild("KeyLabel")
     if label then
         local bind = keybinds[bindName]
-        if bind then
-            local keyName = bind.key and bind.key.Name or "None"
-            label.Text = keyName
-        end
+        label.Text = bind and bind.key and bind.key.Name or "None"
     end
-    local button = frame:FindFirstChild("ChangeButton")
-    if button then
-        button.Text = "Изменить"
-        button.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
+    local btn = frame:FindFirstChild("ChangeButton")
+    if btn then
+        btn.Text = "Change"
+        btn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
     end
 end
 
--- Функция для создания строки настройки привязки в вкладке Settings
 local function createKeybindRow(parent, bindName, bindData)
     local row = Instance.new("Frame")
     row.Name = bindName .. "Row"
@@ -3424,7 +3341,7 @@ local function createKeybindRow(parent, bindName, bindData)
     changeBtn.Size = UDim2.new(0.3, 0, 1, 0)
     changeBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
     changeBtn.BackgroundTransparency = 0.2
-    changeBtn.Text = "Изменить"
+    changeBtn.Text = "Change"
     changeBtn.Font = Enum.Font.FredokaOne
     changeBtn.TextSize = 12
     changeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -3434,10 +3351,9 @@ local function createKeybindRow(parent, bindName, bindData)
     btnCorner.Parent = changeBtn
 
     changeBtn.MouseButton1Click:Connect(function()
-        -- Начинаем ожидание нажатия клавиши
-        if waitingForKey then return end -- уже ожидаем
+        if waitingForKey then return end
         waitingForKey = bindName
-        changeBtn.Text = "Нажмите клавишу..."
+        changeBtn.Text = "Press any key..."
         changeBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 50)
         print("[mm2run/keybind] Waiting for key for " .. bindName)
     end)
@@ -3445,46 +3361,34 @@ local function createKeybindRow(parent, bindName, bindData)
     return row
 end
 
--- Создаём вкладку Settings (она уже создана в цикле, но мы её наполним)
--- Найдём её по имени
-local settingsFrame = tabFrames["Settings"]
+-- Populate Settings tab
 if settingsFrame then
-    -- Очистим от возможных старых элементов (если пересоздаётся)
+    -- Clear old elements (except UIListLayout and UIPadding)
     for _, child in ipairs(settingsFrame:GetChildren()) do
-        if child:IsA("Frame") or child:IsA("TextLabel") or child:IsA("TextButton") then
+        if not child:IsA("UIListLayout") and not child:IsA("UIPadding") then
             child:Destroy()
         end
     end
-    -- Убедимся, что есть UIListLayout
-    local layout = settingsFrame:FindFirstChild("UIListLayout")
-    if not layout then
-        layout = Instance.new("UIListLayout")
-        layout.FillDirection = Enum.FillDirection.Vertical
-        layout.SortOrder = Enum.SortOrder.LayoutOrder
-        layout.Padding = UDim.new(0, 6)
-        layout.Parent = settingsFrame
-    end
-    -- Добавим заголовок
+    
+    -- Title
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 25)
     title.BackgroundTransparency = 1
-    title.Text = "Горячие клавиши (Keybinds)"
+    title.Text = "Hotkeys (Keybinds)"
     title.Font = Enum.Font.FredokaOne
     title.TextSize = 16
     title.TextColor3 = Color3.fromRGB(255, 255, 200)
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = settingsFrame
 
-    -- Для каждой привязки создаём строку
     for bindName, bindData in pairs(keybinds) do
         createKeybindRow(settingsFrame, bindName, bindData)
     end
 
-    -- Инструкция
     local instr = Instance.new("TextLabel")
     instr.Size = UDim2.new(1, 0, 0, 20)
     instr.BackgroundTransparency = 1
-    instr.Text = "Нажмите 'Изменить', затем клавишу на клавиатуре"
+    instr.Text = "Click 'Change', then press any key on your keyboard"
     instr.Font = Enum.Font.SourceSans
     instr.TextSize = 12
     instr.TextColor3 = Color3.fromRGB(180, 180, 180)
@@ -3492,21 +3396,18 @@ if settingsFrame then
     instr.Parent = settingsFrame
 end
 
--- Обработчик нажатий клавиш (глобальный)
-local userInputService = game:GetService("UserInputService")
-
-userInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end -- если игра обрабатывает ввод (например, чат)
+-- Global keybind handler
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
     if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
     local key = input.KeyCode
     if not key then return end
 
-    -- Если мы ожидаем назначение клавиши
     if waitingForKey then
         local bindName = waitingForKey
         local bindData = keybinds[bindName]
         if bindData then
-            -- Проверим, не занята ли эта клавиша другой функцией
+            -- Check for conflicts
             local conflict = false
             for otherName, otherBind in pairs(keybinds) do
                 if otherName ~= bindName and otherBind.key == key then
@@ -3515,21 +3416,18 @@ userInputService.InputBegan:Connect(function(input, gameProcessed)
                 end
             end
             if conflict then
-                print("[mm2run/keybind] Key " .. key.Name .. " already used by another bind")
-                -- Можно показать уведомление, но оставим просто лог
+                print("[mm2run/keybind] Key " .. key.Name .. " already used")
                 waitingForKey = nil
-                -- Обновим кнопку
                 local frame = settingsFrame and settingsFrame:FindFirstChild(bindName .. "Row")
                 if frame then
                     local btn = frame:FindFirstChild("ChangeButton")
                     if btn then
-                        btn.Text = "Изменить"
+                        btn.Text = "Change"
                         btn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
                     end
                 end
                 return
             end
-            -- Назначаем новую клавишу
             bindData.key = key
             updateKeybindDisplay(bindName)
             print("[mm2run/keybind] Assigned key " .. key.Name .. " to " .. bindName)
@@ -3538,41 +3436,18 @@ userInputService.InputBegan:Connect(function(input, gameProcessed)
         return
     end
 
-    -- Проверяем, есть ли привязка для этой клавиши
-    for bindName, bindData in pairs(keybinds) do
+    -- Execute bound action
+    for _, bindData in pairs(keybinds) do
         if bindData.key == key then
-            -- Вызываем соответствующую функцию
-            pcall(function()
-                bindData.action()
-            end)
+            pcall(bindData.action)
             break
         end
     end
 end)
 
+print("Fake Trade Script fully loaded with Settings tab and Keybinds support!")
+print("Keybinds: F1=Start trade, F2=Random items, F3=Accept offer, F4=Random player, F5=Block player, F6=Select player in trade")
+
 -- ============================================================
--- КОНЕЦ ДОПОЛНЕНИЙ
+-- END OF PART 4/4 - SCRIPT COMPLETE
 -- ============================================================
-
--- Всё остальное, что было в конце файла (например, создание controlGui и т.д.) остаётся без изменений.
--- Убедитесь, что все остальные части скрипта присутствуют (они уже были в исходном файле).
-
--- ВНИМАНИЕ: В оригинальном коде после объявления controlGui и создания вкладок идёт создание контента для каждой вкладки.
--- Поскольку мы добавили новую вкладку, она будет создана, но содержимое для неё мы добавили выше (settingsFrame).
--- Однако важно, чтобы код создания вкладок (который идёт после определения tabs) не был нарушен.
--- В оригинальном коде есть цикл для создания вкладок, который использует tabs. Мы заменили tabs на новый массив, так что всё должно работать.
--- Также в оригинале после создания вкладок идёт код для наполнения Control, Players, Items, Spawner, Values.
--- Мы не трогаем этот код, он остаётся.
-
--- Ниже идёт код, который создаёт controlGui и всё остальное. Он уже есть в исходном файле.
--- Убедитесь, что вы скопировали ВЕСЬ код из файла faketrade.txt и заменили только массив tabs,
--- а также добавили наш блок с настройками (этот блок нужно вставить перед вызовом любых функций,
--- которые используют keybinds, но после объявления всех необходимых функций (StartTrade, AcceptTrade и т.д.)).
--- В идеале поместите этот блок в самое начало файла после всех определений функций, но перед созданием GUI.
-
--- Для удобства я выделил все изменения в отдельный блок. Чтобы не запутаться, просто замените исходный скрипт на этот полный файл.
-
--- Если у вас возникнут ошибки, проверьте, что все переменные (weaponButtons, TradeTable, PartnerUserBox, TheirOffer, v84, AcceptTrade, StartTrade и т.д.) определены.
--- В оригинальном коде они определены, так что проблем быть не должно.
-
--- Удачи!

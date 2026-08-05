@@ -3211,6 +3211,47 @@ local keybinds = {
             AcceptTrade()
         end
     },
+    local layout = Instance.new("UIListLayout")
+    layout.FillDirection = Enum.FillDirection.Horizontal
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 8)
+    layout.Parent = row
+
+    local label = Instance.new("TextLabel")
+-- ============================================================
+-- PART 4/4: Settings tab with Keybinds and final initialization
+-- ============================================================
+
+-- ============================================================
+-- KEYBINDS DICTIONARY (FIXED: selectPlayerInTrade works from GUI)
+-- ============================================================
+
+local keybinds = {
+    startTrade = {
+        key = Enum.KeyCode.F1,
+        label = "Start trade",
+        action = StartTrade
+    },
+    randomItems = {
+        key = Enum.KeyCode.F2,
+        label = "Random items",
+        action = function()
+            if #weaponButtons == 0 then return end
+            local info = weaponButtons[math.random(1, #weaponButtons)]
+            OfferItemAnotherPlayer(info.entry.key, "Weapons")
+        end
+    },
+    acceptOffer = {
+        key = Enum.KeyCode.F3,
+        label = "Accept their offer",
+        action = function()
+            if not next(TradeTable["Player1"]["Offer"]) and not next(TradeTable["Player2"]["Offer"]) then return end
+            if v84 then return end
+            TheirOffer.Accepted.Visible = true
+            TradeTable["Player2"]["Accepted"] = true
+            AcceptTrade()
+        end
+    },
     randomPlayer = {
         key = Enum.KeyCode.F4,
         label = "Random player",
@@ -3239,9 +3280,12 @@ local keybinds = {
         label = "Select player in trade",
         action = function()
             local partnerName = nil
+
+            -- 1) Try to get the name from the trade GUI (most reliable)
             pcall(function()
                 if TheirOffer and TheirOffer.Username and TheirOffer.Username.Text then
                     local raw = TheirOffer.Username.Text
+                    -- Remove parentheses and extra spaces
                     raw = string.gsub(raw, "[%(%)]", "")
                     raw = string.gsub(raw, "^%s+", "")
                     raw = string.gsub(raw, "%s+$", "")
@@ -3250,6 +3294,8 @@ local keybinds = {
                     end
                 end
             end)
+
+            -- 2) Fallback to TradeTable if GUI didn't give a valid name
             if not partnerName then
                 pcall(function()
                     if TradeTable and TradeTable.Player2 and TradeTable.Player2.Player then
@@ -3260,6 +3306,8 @@ local keybinds = {
                     end
                 end)
             end
+
+            -- 3) Apply the found name
             if partnerName then
                 TradeTable.Player2.Player = partnerName
                 PartnerUserBox.Text = partnerName
@@ -3283,6 +3331,7 @@ local keybinds = {
         end
     }
 }
+
 local waitingForKey = nil
 
 local function updateKeybindDisplay(bindName)
@@ -3448,7 +3497,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 print("Fake Trade Script fully loaded with Settings tab and Keybinds support!")
-print("Keybinds: F1=Start trade, F2=Random items, F3=Accept offer, F4=Random player, F5=Block player, F6=Select player in trade")
+print("Keybinds: F1=Start trade, F2=Random items, F3=Accept offer, F4=Random player, F5=Block player, F6=Select player in trade, F7=Toggle GUI")
 
 -- ============================================================
 -- END OF PART 4/4 - SCRIPT COMPLETE

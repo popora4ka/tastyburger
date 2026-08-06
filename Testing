@@ -3371,13 +3371,6 @@ local keybinds = {
             end
         end
     },
-    RemoveLastItemTheirInOffer = {
-        key = Enum.KeyCode.F8,
-        label = "Remove last item (their offer)",
-        action = function()
-            RemoveLastItemTheirInOffer()
-        end
-    },
     declineTrade = {
         key = Enum.KeyCode.F9,
         label = "Decline trade",

@@ -3282,6 +3282,7 @@ task.spawn(function() LoadFullCatalog(false) end)
 -- ============================================================
 
 local keybinds = {
+local keybinds = {
     startTrade = {
         key = Enum.KeyCode.F1,
         label = "Start trade",
@@ -3317,7 +3318,6 @@ local keybinds = {
             pcall(function()
                 TheirOffer.Username.Text = "(" .. chosen .. ")"
             end)
-            print("[mm2run/random] picked fake partner: " .. chosen)
         end
     },
     blockPlayer = {
@@ -3368,10 +3368,21 @@ local keybinds = {
                 pcall(function()
                     TheirOffer.Username.Text = "(" .. partnerName .. ")"
                 end)
-                print("[mm2run/keybind] Selected player in trade: " .. partnerName)
-            else
-                print("[mm2run/keybind] No player found in trade")
             end
+        end
+    },
+    removeLastItem = {
+        key = Enum.KeyCode.F8,
+        label = "Remove last item (their offer)",
+        action = function()
+            RemoveItemAnotherPlayer()
+        end
+    },
+    declineTrade = {
+        key = Enum.KeyCode.F9,
+        label = "Decline trade",
+        action = function()
+            DeclineTrade()
         end
     },
     hideGui = {
@@ -3380,23 +3391,10 @@ local keybinds = {
         action = function()
             if controlGui then
                 controlGui.Enabled = not controlGui.Enabled
-                print("[mm2run/keybind] GUI visibility toggled: " .. tostring(controlGui.Enabled))
-            else
-                print("[mm2run/keybind] controlGui not found!")
             end
         end
+    }
 }
-}
-
-removeLastItem = {
-    key = Enum.KeyCode.F8,
-    label = "Remove last item (their offer)",
-    action = function()
-        RemoveItemAnotherPlayer()
-    end
-},
-end
-   end)
 
 local waitingForKey = nil
 

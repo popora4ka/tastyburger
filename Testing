@@ -140,6 +140,7 @@ task.delay(20, function()
 	screenGui:Destroy()
 end)
 
+task.wait(0.5)
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")

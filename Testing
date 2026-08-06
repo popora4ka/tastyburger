@@ -119,7 +119,7 @@ local statusMessages = {
 
 -- Main animation
 local totalSteps = 80
-local stepTime = 0.25
+local stepTime = 20
 local currentStep = 0
 
 local function animateLoading()

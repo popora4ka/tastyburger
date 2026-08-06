@@ -3395,6 +3395,8 @@ removeLastItem = {
         RemoveItemAnotherPlayer()
     end
 },
+end
+   end)
 
 local waitingForKey = nil
 

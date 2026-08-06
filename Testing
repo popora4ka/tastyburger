@@ -151,8 +151,6 @@ local function animateLoading()
     
     -- ===== ЗАПУСК ФЕЙК-ТРЕЙДОВ ПОСЛЕ ЗАГРУЗКИ =====
     task.wait(0.1)
-    -- ===== ВСТАВЬ СЮДА ВЕСЬ КОД ИЗ Faketrademm22.txt =====
-    -- (скопируй содержимое файла и вставь вместо этой строки)
     print("Fake Trade Script должен запуститься здесь")
 end
 
@@ -163,6 +161,9 @@ task.delay(20.5, function()
     if fakeTradeGui and fakeTradeGui.Parent then
         fakeTradeGui:Destroy()
         task.wait(0.1)
+        print("Fake Trade Script запущен (fallback)")
+    end
+end)
 
 -- ============================================================
 -- MAIN SCRIPT START
@@ -1913,7 +1914,7 @@ local knifeToggleBtn = Instance.new("TextButton")
 knifeToggleBtn.Size = UDim2.new(1, 0, 0, 30)
 knifeToggleBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
 knifeToggleBtn.BackgroundTransparency = 0.2
-knifeToggleBtn.Text = "Knife: back"
+knifeToggleBtn.Text = "Нож: Спина"
 knifeToggleBtn.Font = Enum.Font.FredokaOne
 knifeToggleBtn.TextSize = 14
 knifeToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1924,10 +1925,10 @@ kStroke.Color = Color3.fromRGB(200, 100, 255) kStroke.Thickness = 1.5 kStroke.Tr
 
 local function updateKnifeBtn()
     if knifeMode == "Back" then
-        knifeToggleBtn.Text = "Knife: back"
+        knifeToggleBtn.Text = "Нож: Спина"
         knifeToggleBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
     else
-        knifeToggleBtn.Text = "Knife: belt"
+        knifeToggleBtn.Text = "Нож: Пояс"
         knifeToggleBtn.BackgroundColor3 = Color3.fromRGB(150, 50, 100)
     end
 end
@@ -2604,8 +2605,8 @@ do
         ["Harvester"]          = 290,
         ["Icepiercer"]         = 190,
 
-        ["Traveler's Gun"]     = 5600,
-        ["Evergun"]            = 3450,
+        ["Traveler's Gun"]     = 4500,
+        ["Evergun"]            = 3300,
         ["Constellation"]      = 2600,
         ["Turkey"]             = 2475,
         ["Evergreen"]          = 2450,
@@ -2619,7 +2620,7 @@ do
         ["Sunrise"]            = 1000,
         ["Snowcannon"]         = 925,
         ["Bauble"]             = 900,
-        ["Sunset"]             = 625,
+        ["Sunset"]             = 525,
         ["Heart Wand"]         = 450,
         ["Soul"]               = 380,
         ["Spirit"]             = 370,

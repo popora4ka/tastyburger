@@ -123,152 +123,45 @@ local stepTime = 0.25
 local currentStep = 0
 
 local function animateLoading()
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-
--- ===== LOADING SCREEN =====
-local fakeTradeGui = Instance.new("ScreenGui")
-fakeTradeGui.Name = "FakeTradeLoad"
-fakeTradeGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-fakeTradeGui.ResetOnSpawn = false
-pcall(function()
-    if syn and syn.protect_gui then syn.protect_gui(fakeTradeGui) end
-    if gethui then fakeTradeGui.Parent = gethui() else fakeTradeGui.Parent = CoreGui end
-end)
-if not fakeTradeGui.Parent then fakeTradeGui.Parent = playerGui end
-
-local mainFrame = Instance.new("Frame", fakeTradeGui)
-mainFrame.Size = UDim2.new(0, 400, 0, 200)
-mainFrame.Position = UDim2.new(0.5, -200, 0.5, -100)
-mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-mainFrame.BorderSizePixel = 0
-local corner = Instance.new("UICorner", mainFrame)
-corner.CornerRadius = UDim.new(0, 12)
-local stroke = Instance.new("UIStroke", mainFrame)
-stroke.Color = Color3.fromRGB(60, 60, 80)
-stroke.Thickness = 2
-
-local title = Instance.new("TextLabel", mainFrame)
-title.Size = UDim2.new(1, -20, 0, 35)
-title.Position = UDim2.new(0, 10, 0, 10)
-title.BackgroundTransparency = 1
-title.Text = "⏳ Loading assets..."
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextScaled = true
-title.FontFace = Font.new("rbxassetid://16658221428", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-title.TextXAlignment = Enum.TextXAlignment.Left
-local ts = Instance.new("UIStroke", title)
-ts.Color = Color3.fromRGB(0, 0, 0)
-ts.Thickness = 2
-
-local progressBg = Instance.new("Frame", mainFrame)
-progressBg.Size = UDim2.new(0.9, 0, 0, 14)
-progressBg.Position = UDim2.new(0.05, 0, 0.45, 0)
-progressBg.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
-progressBg.BorderSizePixel = 0
-local pCorner = Instance.new("UICorner", progressBg)
-pCorner.CornerRadius = UDim.new(0, 7)
-
-local progressBar = Instance.new("Frame", progressBg)
-progressBar.Size = UDim2.new(0, 0, 1, 0)
-progressBar.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
-progressBar.BorderSizePixel = 0
-local barCorner = Instance.new("UICorner", progressBar)
-barCorner.CornerRadius = UDim.new(0, 7)
-
-local percentLabel = Instance.new("TextLabel", mainFrame)
-percentLabel.Size = UDim2.new(0, 60, 0, 25)
-percentLabel.Position = UDim2.new(0.9, -65, 0.45, -5)
-percentLabel.BackgroundTransparency = 1
-percentLabel.Text = "0%"
-percentLabel.TextColor3 = Color3.fromRGB(200, 220, 255)
-percentLabel.TextScaled = true
-percentLabel.FontFace = Font.new("rbxassetid://16658221428", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-percentLabel.TextXAlignment = Enum.TextXAlignment.Right
-
-local statusText = Instance.new("TextLabel", mainFrame)
-statusText.Size = UDim2.new(0.9, 0, 0, 25)
-statusText.Position = UDim2.new(0.05, 0, 0.65, 0)
-statusText.BackgroundTransparency = 1
-statusText.Text = "Initializing..."
-statusText.TextColor3 = Color3.fromRGB(180, 180, 200)
-statusText.TextScaled = true
-statusText.FontFace = Font.new("rbxasset://fonts/families/FredokaOne.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal)
-statusText.TextXAlignment = Enum.TextXAlignment.Center
-
-local statusMessages = {
-    "Loading trade gui...",
-    "Loading godlys for spawner...",
-    "Loading database...",
-    "Verifying slots...",
-    "Preparing UI...",
-    "Syncing remote...",
-    "Loading assets...",
-    "Finalizing setup...",
-    "Trade ready!",
-}
-
-local totalSteps = 80
-local stepTime = 0.25
-local currentStep = 0
-
-local function animateLoading()
     while currentStep < totalSteps do
         currentStep = currentStep + 1
         local progress = currentStep / totalSteps
+        
+        -- Update progress bar
         progressBar:TweenSize(UDim2.new(progress, 0, 1, 0), "Out", "Quad", 0.2, true)
         percentLabel.Text = math.floor(progress * 100) .. "%"
+        
+        -- Update status text
         if currentStep % 3 == 0 then
             local msgIndex = (currentStep // 3) % #statusMessages + 1
             statusText.Text = statusMessages[msgIndex]
         end
+        
         task.wait(stepTime)
     end
+    
+    -- Completion
     statusText.Text = "✅ Ready!"
     progressBar.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
     progressBar:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.3, true)
     percentLabel.Text = "100%"
+    
     task.wait(0.5)
     fakeTradeGui:Destroy()
+    
+    -- ===== ЗАПУСК ФЕЙК-ТРЕЙДОВ ПОСЛЕ ЗАГРУЗКИ =====
     task.wait(0.1)
-    print("Fake Trade Script started")
+    print("Fake Trade Script должен запуститься здесь")
 end
 
 task.spawn(animateLoading)
 
+-- Force close after 20 seconds (fallback)
 task.delay(20.5, function()
     if fakeTradeGui and fakeTradeGui.Parent then
         fakeTradeGui:Destroy()
         task.wait(0.1)
-        print("Fake Trade Script started (fallback)")
+        print("Fake Trade Script запущен (fallback)")
     end
 end)
 

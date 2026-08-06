@@ -1775,7 +1775,7 @@ local knifeToggleBtn = Instance.new("TextButton")
 knifeToggleBtn.Size = UDim2.new(1, 0, 0, 30)
 knifeToggleBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
 knifeToggleBtn.BackgroundTransparency = 0.2
-knifeToggleBtn.Text = "Нож: Спина"
+knifeToggleBtn.Text = "Knife: back"
 knifeToggleBtn.Font = Enum.Font.FredokaOne
 knifeToggleBtn.TextSize = 14
 knifeToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -1786,10 +1786,10 @@ kStroke.Color = Color3.fromRGB(200, 100, 255) kStroke.Thickness = 1.5 kStroke.Tr
 
 local function updateKnifeBtn()
     if knifeMode == "Back" then
-        knifeToggleBtn.Text = "Нож: Спина"
+        knifeToggleBtn.Text = "Knife: back"
         knifeToggleBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
     else
-        knifeToggleBtn.Text = "Нож: Пояс"
+        knifeToggleBtn.Text = "Knife: belt"
         knifeToggleBtn.BackgroundColor3 = Color3.fromRGB(150, 50, 100)
     end
 end

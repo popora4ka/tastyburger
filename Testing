@@ -3371,11 +3371,11 @@ local keybinds = {
             end
         end
     },
-    removeLastItem = {
+    RemoveLastItemTheirInOffer = {
         key = Enum.KeyCode.F8,
         label = "Remove last item (their offer)",
         action = function()
-            RemoveItemAnotherPlayer()
+            RemoveLastItemTheirInOffer()
         end
     },
     declineTrade = {

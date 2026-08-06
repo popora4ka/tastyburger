@@ -137,7 +137,7 @@ local function animateLoading()
             statusText.Text = statusMessages[msgIndex]
         end
         
-        task.wait(0.5)
+        task.wait(Steptime)
     end
     
     -- Completion

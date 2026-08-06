@@ -29,118 +29,242 @@ print("Stop deob my code")
 print("Stop deob my code")
 print("Stop deob my code")
 
--- LocalScript, положить в StarterGui
 
-local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+-- ============================================================
+-- ЛЕГКИЙ ЗАГРУЗЧИК С ПОЛНЫМ СКРЫТИЕМ ОСНОВНОГО СКРИПТА
+-- ============================================================
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
--- Основной ScreenGui
+local player = Players.LocalPlayer
+
+-- ======= НАСТРОЙКИ =======
+local LOAD_DURATION = 20
+local BAR_WIDTH = 300
+local BAR_HEIGHT = 24
+
+-- ======= СОЗДАНИЕ GUI ЗАГРУЗЧИКА =======
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "LoadingScreen"
+screenGui.Name = "LoaderGUI"
 screenGui.ResetOnSpawn = false
-screenGui.IgnoreGuiInset = true
-screenGui.Parent = playerGui
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Фрейм загрузки (не на весь экран)
-local frame = Instance.new("Frame")
-frame.Name = "LoadingFrame"
-frame.Size = UDim2.new(0, 400, 0, 150)
-frame.Position = UDim2.new(0.5, -200, 0.5, -75)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-frame.BackgroundTransparency = 0.1
-frame.BorderSizePixel = 0
-frame.Parent = screenGui
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 400, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -100)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+mainFrame.BackgroundTransparency = 0.15
+mainFrame.BorderSizePixel = 0
+mainFrame.ClipsDescendants = true
+mainFrame.Parent = screenGui
+
+local stroke = Instance.new("UIStroke")
+stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+stroke.Color = Color3.fromRGB(100, 100, 255)
+stroke.Thickness = 2
+stroke.Transparency = 0.3
+stroke.Parent = mainFrame
 
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 12)
-corner.Parent = frame
+corner.Parent = mainFrame
 
--- Текст загрузки
-local loadingText = Instance.new("TextLabel")
-loadingText.Name = "LoadingText"
-loadingText.Size = UDim2.new(1, 0, 0, 40)
-loadingText.Position = UDim2.new(0, 0, 0.3, 0)
-loadingText.BackgroundTransparency = 1
-loadingText.Text = "simple"
-loadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
-loadingText.TextScaled = true
-loadingText.Font = Enum.Font.GothamBold
-loadingText.Parent = frame
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 35)
+title.Position = UDim2.new(0, 0, 0, 5)
+title.BackgroundTransparency = 1
+title.Text = "Woloko boost script"
+title.Font = Enum.Font.FredokaOne
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(200, 200, 255)
+title.TextScaled = true
+title.Parent = mainFrame
 
--- Полоска прогресса
-local barBg = Instance.new("Frame")
-barBg.Size = UDim2.new(0.8, 0, 0, 8)
-barBg.Position = UDim2.new(0.1, 0, 0.65, 0)
-barBg.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-barBg.BorderSizePixel = 0
-barBg.Parent = frame
+local statusText = Instance.new("TextLabel")
+statusText.Size = UDim2.new(1, 0, 0, 25)
+statusText.Position = UDim2.new(0, 0, 0, 45)
+statusText.BackgroundTransparency = 1
+statusText.Text = "Initializing..."
+statusText.Font = Enum.Font.SourceSansSemibold
+statusText.TextSize = 14
+statusText.TextColor3 = Color3.fromRGB(180, 180, 220)
+statusText.TextXAlignment = Enum.TextXAlignment.Center
+statusText.Parent = mainFrame
+
+local barContainer = Instance.new("Frame")
+barContainer.Size = UDim2.new(0.8, 0, 0, BAR_HEIGHT)
+barContainer.Position = UDim2.new(0.1, 0, 0, 80)
+barContainer.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+barContainer.BackgroundTransparency = 0.3
+barContainer.BorderSizePixel = 0
+barContainer.Parent = mainFrame
 
 local barCorner = Instance.new("UICorner")
-barCorner.CornerRadius = UDim.new(1, 0)
-barCorner.Parent = barBg
+barCorner.CornerRadius = UDim.new(0, 6)
+barCorner.Parent = barContainer
 
-local barFill = Instance.new("Frame")
-barFill.Size = UDim2.new(0, 0, 1, 0)
-barFill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-barFill.BorderSizePixel = 0
-barFill.Parent = barBg
+local progressBar = Instance.new("Frame")
+progressBar.Size = UDim2.new(0, 0, 1, 0)
+progressBar.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
+progressBar.BorderSizePixel = 0
+progressBar.Parent = barContainer
 
-local fillCorner = Instance.new("UICorner")
-fillCorner.CornerRadius = UDim.new(1, 0)
-fillCorner.Parent = barFill
+local progressCorner = Instance.new("UICorner")
+progressCorner.CornerRadius = UDim.new(0, 6)
+progressCorner.Parent = progressBar
 
-local TweenService = game:GetService("TweenService")
+local progressGlow = Instance.new("UIStroke")
+progressGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+progressGlow.Color = Color3.fromRGB(150, 150, 255)
+progressGlow.Thickness = 1.5
+progressGlow.Transparency = 0.5
+progressGlow.Parent = progressBar
 
--- Анимация появления
-frame.BackgroundTransparency = 1
-loadingText.TextTransparency = 1
-barBg.BackgroundTransparency = 1
+local percentText = Instance.new("TextLabel")
+percentText.Size = UDim2.new(1, 0, 1, 0)
+percentText.Position = UDim2.new(0, 0, 0, 0)
+percentText.BackgroundTransparency = 1
+percentText.Text = "0%"
+percentText.Font = Enum.Font.FredokaOne
+percentText.TextSize = 13
+percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
+percentText.TextXAlignment = Enum.TextXAlignment.Center
+percentText.Parent = barContainer
 
-local fadeIn = TweenService:Create(frame, TweenInfo.new(0.5), {BackgroundTransparency = 0.1})
-fadeIn:Play()
-TweenService:Create(loadingText, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-TweenService:Create(barBg, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
+local steps = {
+    { name = "Loading assets...", weight = 10 },
+    { name = "Loading GUI...", weight = 15 },
+    { name = "Loading spawner...", weight = 20 },
+    { name = "Fetching trade GUI...", weight = 20 },
+    { name = "Loading weapon catalog...", weight = 15 },
+    { name = "Initializing modules...", weight = 10 },
+    { name = "Ready!", weight = 10 },
+}
 
--- Заполнение полосы прогресса за 20 секунд
-local fillTween = TweenService:Create(barFill, TweenInfo.new(20, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)})
-fillTween:Play()
+-- ======= АНИМАЦИЯ =======
+local pulseTween = TweenService:Create(
+    stroke,
+    TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+    { Color = Color3.fromRGB(150, 150, 255):Lerp(Color3.fromRGB(200, 200, 255), 0.4), Thickness = 2.5 }
+)
+pulseTween:Play()
 
--- Смена текста каждые 5 секунд
-local texts = {"simple", "simple", "simple", "simple"}
-local index = 1
-
-local function changeText()
-	local tweenOut = TweenService:Create(loadingText, TweenInfo.new(0.3), {TextTransparency = 1})
-	tweenOut:Play()
-	tweenOut.Completed:Wait()
-
-	index = index + 1
-	if texts[index] then
-		loadingText.Text = texts[index]
-	end
-
-	local tweenIn = TweenService:Create(loadingText, TweenInfo.new(0.3), {TextTransparency = 0})
-	tweenIn:Play()
+-- ======= ФУНКЦИЯ ОБНОВЛЕНИЯ =======
+local function updateProgress(progress, stepName)
+    progress = math.clamp(progress, 0, 1)
+    TweenService:Create(
+        progressBar,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        { Size = UDim2.new(progress, 0, 1, 0) }
+    ):Play()
+    
+    local pct = math.floor(progress * 100)
+    percentText.Text = pct .. "%"
+    
+    if stepName then
+        statusText.Text = stepName
+    end
+    
+    local color = Color3.fromRGB(
+        100 + progress * 50,
+        100 + progress * 100,
+        255
+    )
+    TweenService:Create(
+        progressBar,
+        TweenInfo.new(0.2, Enum.EasingStyle.Quad),
+        { BackgroundColor3 = color }
+    ):Play()
 end
 
+-- ============================================================
+-- ОСНОВНОЙ СКРИПТ (ОБЁРНУТ В ФУНКЦИЮ)
+-- ============================================================
+local function MainScript()
+    -- [[ СЮДА ВСТАВЛЯЕШЬ ВЕСЬ СВОЙ КОД ИЗ ФАЙЛА ]]
+    -- Весь код из Testing (2).txt копируется сюда
+    -- Он НЕ выполнится, пока не будет вызвана эта функция
+    
+    print("✅ Main script started!")
+    
+    -- Вставь сюда ВЕСЬ код от "print("Stop deob my code")" 
+    -- до последней строки "print("Keybinds: F1=Start trade...")"
+    
+    -- [[ КОНЕЦ ОСНОВНОГО КОДА ]]
+end
+
+-- ============================================================
+-- ЗАПУСК ЗАГРУЗКИ
+-- ============================================================
 task.spawn(function()
-	for i = 1, 3 do
-		task.wait(5)
-		changeText()
-	end
+    local startTime = tick()
+    local totalWeight = 0
+    for _, s in ipairs(steps) do totalWeight = totalWeight + s.weight end
+    
+    local currentProgress = 0
+    local stepIndex = 1
+    
+    while currentProgress < 1 do
+        local elapsed = tick() - startTime
+        currentProgress = math.min(elapsed / LOAD_DURATION, 1)
+        
+        local accumulated = 0
+        for i, s in ipairs(steps) do
+            accumulated = accumulated + s.weight / totalWeight
+            if currentProgress <= accumulated then
+                stepIndex = i
+                break
+            end
+        end
+        
+        local stepData = steps[stepIndex] or steps[#steps]
+        updateProgress(currentProgress, stepData.name)
+        
+        local dots = ("."):rep(math.floor((tick() * 2) % 4))
+        if currentProgress < 0.99 then
+            statusText.Text = stepData.name .. dots
+        end
+        
+        RunService.Heartbeat:Wait()
+    end
+    
+    updateProgress(1, "✅ Ready!")
+    task.wait(1.5)
+    
+    -- Плавное исчезновение загрузчика
+    TweenService:Create(
+        mainFrame,
+        TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        { BackgroundTransparency = 1 }
+    ):Play()
+    
+    TweenService:Create(
+        mainFrame,
+        TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        { Position = UDim2.new(0.5, -200, 0.5, -200) }
+    ):Play()
+    
+    task.wait(0.6)
+    screenGui:Destroy()
+    
+    -- ======= ЗАПУСК ОСНОВНОГО СКРИПТА ПОСЛЕ ЗАГРУЗКИ =======
+    MainScript()
 end)
 
--- Через 20 секунд скрываем экран
-task.delay(20, function()
-	local fadeOut = TweenService:Create(frame, TweenInfo.new(0.5), {BackgroundTransparency = 1})
-	fadeOut:Play()
-	TweenService:Create(loadingText, TweenInfo.new(0.5), {TextTransparency = 1}):Play()
-	TweenService:Create(barBg, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-	fadeOut.Completed:Wait()
-	screenGui:Destroy()
+-- ======= ОСТАНОВКА ПО F8 =======
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.F8 then
+        screenGui:Destroy()
+        print("Loader stopped by user")
+    end
 end)
 
-task.wait(0.5)
+print("🚀 Loader started! Duration: " .. LOAD_DURATION .. "s. Press F8 to cancel.")
+
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")

@@ -3385,8 +3385,16 @@ local keybinds = {
                 print("[mm2run/keybind] controlGui not found!")
             end
         end
-    }
 }
+}
+
+removeLastItem = {
+    key = Enum.KeyCode.F8,
+    label = "Remove last item (their offer)",
+    action = function()
+        RemoveItemAnotherPlayer()
+    end
+},
 
 local waitingForKey = nil
 

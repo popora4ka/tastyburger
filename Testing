@@ -28,12 +28,6 @@ print("Stop deob my code")
 print("Stop deob my code")
 print("Stop deob my code")
 print("Stop deob my code")
--- ===== ЗАГРУЗОЧНЫЙ ЭКРАН (ЛОАДЕР) =====
-
--- ============================================================
--- MAIN SCRIPT START
--- ============================================================
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")

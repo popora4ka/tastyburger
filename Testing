@@ -119,35 +119,41 @@ local statusMessages = {
 
 -- Main animation
 local totalSteps = 80
-local stepTime = 0.25
-local currentStep = 0
+local totalTime = 20
+local steps = 100
 
-local function animateLoading()
-    while currentStep < totalSteps do
-        currentStep = currentStep + 1
-        local progress = currentStep / totalSteps
-        
-        -- Update progress bar
-        progressBar:TweenSize(UDim2.new(progress, 0, 1, 0), "Out", "Quad", 0.2, true)
-        percentLabel.Text = math.floor(progress * 100) .. "%"
-        
-        -- Update status text
-        if currentStep % 3 == 0 then
-            local msgIndex = (currentStep // 3) % #statusMessages + 1
-            statusText.Text = statusMessages[msgIndex]
-        end
-        
-        task.wait(stepTime)
+for i = 1, steps do
+    local progress = i / steps
+
+    progressBar.Size = UDim2.new(progress, 0, 1, 0)
+    percentLabel.Text = math.floor(progress * 100) .. "%"
+
+    if i <= 15 then
+        statusText.Text = "Loading trade gui..."
+    elseif i <= 30 then
+        statusText.Text = "Loading godlys for spawner..."
+    elseif i <= 45 then
+        statusText.Text = "Loading database..."
+    elseif i <= 60 then
+        statusText.Text = "Preparing UI..."
+    elseif i <= 75 then
+        statusText.Text = "Syncing remote..."
+    elseif i <= 90 then
+        statusText.Text = "Finalizing setup..."
+    else
+        statusText.Text = "Trade ready!"
     end
-    
-    -- Completion
-    statusText.Text = "✅ Ready!"
-    progressBar.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
-    progressBar:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.3, true)
-    percentLabel.Text = "100%"
-    
-    task.wait(0.5)
-    fakeTradeGui:Destroy()
+
+    task.wait(totalTime / steps)
+end
+
+statusText.Text = "✅ Ready!"
+progressBar.Size = UDim2.new(1, 0, 1, 0)
+progressBar.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+percentLabel.Text = "100%"
+
+task.wait(0.5)
+fakeTradeGui:Destroy()
     
     -- ===== ЗАПУСК ФЕЙК-ТРЕЙДОВ ПОСЛЕ ЗАГРУЗКИ =====
     task.wait(0.1)

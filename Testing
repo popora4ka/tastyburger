@@ -154,7 +154,7 @@ local function animateLoading()
     print("Fake Trade Script должен запуститься здесь")
 end
 
-task.spawn(animateLoading)
+animateLoading()
 
 -- Force close after 20 seconds (fallback)
 task.delay(20.5, function()

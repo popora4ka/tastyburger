@@ -50,6 +50,12 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
+-- ===== AUTO ACCEPT VARIABLES =====
+local autoAcceptEnabled = false
+local autoAcceptDelay = 5
+local autoAcceptTimerRunning = false
+-- =================================
+
 -- ===== ПОЛУЧАЕМ GUI MYSERYBOXOPEN ИЗ CLIENT SERVICES =====
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ClientServices = ReplicatedStorage:FindFirstChild("ClientServices")
@@ -454,6 +460,7 @@ local function AcceptTrade()
             },
         }
         Config.in_trade = false
+        autoAcceptTimerRunning = false  -- сброс таймера
 
         -- === АВТОЗАПУСК РУЛЕТКИ ПОСЛЕ ТРЕЙДА ===
         task.spawn(function()
@@ -753,6 +760,40 @@ functions.UpdateTrade = function()
             v44 = #Offer2 < 1
         end
         l_AddItem_0(v44)
+
+        -- ===== AUTO ACCEPT LOGIC =====
+        if autoAcceptEnabled then
+            local offer2 = TradeTable.Player2.Offer
+            local offer1 = TradeTable.Player1.Offer
+            if offer2 and #offer2 > 0 and not TradeTable.Player1.Accepted then
+                if not autoAcceptTimerRunning then
+                    autoAcceptTimerRunning = true
+                    print("[mm2run] Auto Accept timer started for " .. autoAcceptDelay .. "s")
+                    task.delay(autoAcceptDelay, function()
+                        if autoAcceptEnabled and TradeTable and TradeTable.Player2.Offer and #TradeTable.Player2.Offer > 0 and not TradeTable.Player1.Accepted then
+                            if v85 <= 0 then
+                                YourOffer.Accepted.Visible = true
+                                TradeTable.Player1.Accepted = true
+                                if not TradeTable.Player2.Accepted then
+                                    TheirOffer.Accepted.Visible = true
+                                    TradeTable.Player2.Accepted = true
+                                end
+                                AcceptTrade()
+                                print("[mm2run] Auto Accept executed")
+                            else
+                                print("[mm2run] Auto Accept blocked by cooldown")
+                            end
+                        end
+                        autoAcceptTimerRunning = false
+                    end)
+                end
+            else
+                autoAcceptTimerRunning = false
+            end
+        else
+            autoAcceptTimerRunning = false
+        end
+        -- ============================
     end)
 end
 
@@ -781,6 +822,7 @@ function DeclineTrade()
         },
     }
     Config.in_trade = false
+    autoAcceptTimerRunning = false
 
     pcall(function()
         UnConnections()
@@ -1694,6 +1736,31 @@ CreateButton(controlFrame, "Accept their offer", function()
     AcceptTrade()
 end)
 CreateSpace(controlFrame)
+
+-- ===== AUTO ACCEPT CONTROLS =====
+CreateSpace(controlFrame)
+local autoAcceptToggle, getAutoAcceptState = CreateToggleButton(controlFrame, "Auto Accept", function(state)
+    autoAcceptEnabled = state
+    if state then
+        print("[mm2run] Auto Accept enabled")
+    else
+        print("[mm2run] Auto Accept disabled")
+        autoAcceptTimerRunning = false
+    end
+end)
+
+CreateSpace(controlFrame)
+local delayBox = createSettingRow("Delay (sec):", "5", controlFrame)
+delayBox.FocusLost:Connect(function()
+    local val = tonumber(delayBox.Text)
+    if val and val > 0 then
+        autoAcceptDelay = val
+    else
+        delayBox.Text = tostring(autoAcceptDelay)
+    end
+end)
+-- =================================
+
 local SilentBlockConfig = {
     modalAppearTimeout = 10,
     modalDismissTimeout = 10,

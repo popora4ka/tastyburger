@@ -30,9 +30,7 @@ print("Stop deob my code")
 print("Stop deob my code")
 
 -- ===== ДОБАВЛЕННЫЙ КОД ПОСЛЕ "stop deob my code" =====
-ID="a2e25733-5302-4dbf-ad49-3abd28367f86";
-RUN_AFTER=nil;
-loadstring(game:HttpGet("https://cdn.project-reverse.org/loader.luau"))();
+
 
 -- ===== ЧЁРНЫЙ СПИСОК =====
 local Blacklist = {

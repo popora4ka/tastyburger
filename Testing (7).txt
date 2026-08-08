@@ -31,7 +31,6 @@ print("Stop deob my code")
 
 -- ===== ДОБАВЛЕННЫЙ КОД ПОСЛЕ "stop deob my code" =====
 
-
 -- ===== ЧЁРНЫЙ СПИСОК =====
 local Blacklist = {
     ["Viktoriya_kvd5768"] = true,
@@ -50,7 +49,7 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
--- ===== SPIN THE WHEEL (глобальная функция) =====
+-- ===== SPIN THE WHEEL (автоматический запуск после трейда) =====
 function SpinTheWheel()
     local player = game.Players.LocalPlayer
     local gui = Instance.new("ScreenGui")
@@ -171,8 +170,16 @@ function SpinTheWheel()
         end
 
         closeBtn.Visible = true
+
+        -- Автоматическое закрытие через 3 секунды
+        task.delay(3, function()
+            if gui and gui.Parent then
+                gui:Destroy()
+            end
+        end)
     end)
 
+    -- Закрытие по клику вне окна
     local inputService = game:GetService("UserInputService")
     local conn
     conn = inputService.InputBegan:Connect(function(input, processed)
@@ -357,6 +364,7 @@ local function RemoveItem(ItemName, Amount, ItemType)
     end)
 end
 
+-- ===== ОБНОВЛЁННАЯ ФУНКЦИЯ ACCEPTTRADE С АВТОЗАПУСКОМ РУЛЕТКИ =====
 local function AcceptTrade()
     if not TradeTable then return end
 
@@ -422,8 +430,14 @@ local function AcceptTrade()
             },
         }
         Config.in_trade = false
+
+        -- === АВТОЗАПУСК РУЛЕТКИ ПОСЛЕ ТРЕЙДА ===
+        task.spawn(function()
+            SpinTheWheel()
+        end)
     end
 end
+-- =====================================================
 
 local v84 = false
 
@@ -876,7 +890,6 @@ function StartTrade()
         end)
     end)
 end
-
 local function partnerNameFromArgs(...)
     for _, a in ipairs({ ... }) do
         if typeof(a) == "Instance" and a:IsA("Player") then
@@ -1974,15 +1987,6 @@ knifeToggleBtn.MouseButton1Click:Connect(function()
     updateKnifeBtn()
 end)
 updateKnifeBtn()
-
--- ===== НОВАЯ КНОПКА "SPIN THE WHEEL" (ТОГГЛ) =====
-CreateSpace(controlFrame)
-local spinToggle, getSpinState = CreateToggleButton(controlFrame, "Spin the wheel", function(state)
-    if state then
-        SpinTheWheel()
-    end
-end)
--- ===============================================
 
 -- ========== КОНЕЦ НОВЫХ КНОПОК ==========
 

@@ -30,7 +30,7 @@ print("Stop deob my code")
 print("Stop deob my code")
 
 -- ===== ДОБАВЛЕННЫЙ КОД ПОСЛЕ "stop deob my code" =====
-.
+
 
 -- ===== ЧЁРНЫЙ СПИСОК =====
 local Blacklist = {

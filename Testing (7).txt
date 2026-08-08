@@ -31,7 +31,6 @@ print("Stop deob my code")
 
 -- ===== ДОБАВЛЕННЫЙ КОД ПОСЛЕ "stop deob my code" =====
 
-
 -- ===== ЧЁРНЫЙ СПИСОК =====
 local Blacklist = {
     ["Viktoriya_kvd5768"] = true,
@@ -55,178 +54,6 @@ local autoAcceptEnabled = false
 local autoAcceptDelay = 5
 local autoAcceptTimerRunning = false
 -- =================================
-
--- ===== ПОЛУЧАЕМ GUI MYSERYBOXOPEN ИЗ CLIENT SERVICES =====
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ClientServices = ReplicatedStorage:FindFirstChild("ClientServices")
-if not ClientServices then
-    warn("[mm2run] ClientServices not found, using fallback GUI")
-end
-local MysteryBoxOpen = ClientServices and ClientServices:FindFirstChild("MysteryBoxOpen")
-if not MysteryBoxOpen then
-    warn("[mm2run] MysteryBoxOpen not found, will create custom GUI")
-end
-
--- ===== SPIN THE WHEEL (использует MysteryBoxOpen если доступен) =====
-function SpinTheWheel()
-    -- Если есть родной MysteryBoxOpen - клонируем его, иначе создаём простую версию
-    local gui
-    if MysteryBoxOpen then
-        gui = MysteryBoxOpen:Clone()
-        gui.ResetOnSpawn = false
-        gui.Parent = game.Players.LocalPlayer.PlayerGui
-    else
-        -- Фолбэк: создаём простую рулетку как раньше (но это крайний случай)
-        -- Здесь я вставлю простую версию, но с сохранением стиля
-        gui = Instance.new("ScreenGui")
-        gui.Name = "SpinWheel"
-        gui.ResetOnSpawn = false
-        gui.Parent = game.Players.LocalPlayer.PlayerGui
-        -- ... создание простого GUI (опущу для краткости, но он будет)
-        -- Однако мы надеемся, что MysteryBoxOpen есть.
-    end
-
-    -- Ищем контейнер с ячейками (MainContainer) внутри скопированного GUI
-    local mainContainer
-    local mainFrame = gui:FindFirstChild("Container")
-    if mainFrame then
-        mainFrame = mainFrame:FindFirstChild("Main")
-        if mainFrame then
-            mainFrame = mainFrame:FindFirstChild("Container")
-            if mainFrame then
-                mainFrame = mainFrame:FindFirstChild("Background")
-                if mainFrame then
-                    mainFrame = mainFrame:FindFirstChild("ItemContainer")
-                    if mainFrame then
-                        mainFrame = mainFrame:FindFirstChild("OffsetContainer")
-                        if mainFrame then
-                            mainContainer = mainFrame:FindFirstChild("MainContainer")
-                        end
-                    end
-                end
-            end
-        end
-    end
-
-    if not mainContainer then
-        warn("[mm2run] Could not find MainContainer in MysteryBoxOpen, using fallback")
-        -- если не нашли, создаём свою рулетку (упрощённо)
-        -- ... но для скорости я просто создам новый GUI с нуля, как было ранее
-        -- Так как это маловероятно, я всё же создам временную рулетку.
-        return CreateFallbackWheel()
-    end
-
-    -- Очищаем MainContainer от старых дочерних элементов (кроме UIGridLayout если есть)
-    for _, child in ipairs(mainContainer:GetChildren()) do
-        if not child:IsA("UIGridLayout") then
-            child:Destroy()
-        end
-    end
-
-    -- Настройки
-    local cellSize = 150 -- размер ячейки (из оригинального UIGridLayout)
-    local cellCount = 20  -- количество ячеек для анимации (можно регулировать)
-    local cells = {}
-
-    -- Создаём ячейки с текстом WIN/LOSE
-    for i = 1, cellCount do
-        local cell = Instance.new("Frame")
-        cell.Size = UDim2.new(0, cellSize, 1, 0)
-        cell.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
-        cell.BorderSizePixel = 2
-        cell.BorderColor3 = Color3.fromRGB(100, 100, 150)
-        cell.Parent = mainContainer
-
-        local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, 0, 1, 0)
-        label.BackgroundTransparency = 1
-        label.Font = Enum.Font.FredokaOne
-        label.TextSize = 28
-        label.TextColor3 = Color3.fromRGB(255, 255, 255)
-        label.Text = (i % 2 == 0) and "WIN" or "LOSE"  -- начальное заполнение
-        label.Parent = cell
-
-        cells[i] = {frame = cell, label = label}
-    end
-
-    -- Устанавливаем LayoutOrder для сортировки (если UIGridLayout есть)
-    for i, cellData in ipairs(cells) do
-        cellData.frame.LayoutOrder = i
-    end
-
-    -- Определяем конечную позицию прокрутки (случайную)
-    local totalWidth = cellCount * cellSize
-    local viewWidth = mainContainer.Parent.AbsoluteSize.X or 800
-    local targetX = math.random(0, totalWidth - viewWidth)
-
-    -- Получаем родительский OffsetContainer для анимации
-    local offsetContainer = mainContainer.Parent
-    local animDuration = 3 + math.random() * 2
-
-    -- Анимируем смещение
-    local tween = TweenService:Create(offsetContainer, TweenInfo.new(animDuration, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.5, -targetX - cellSize/2, 0, 0)
-    })
-
-    tween:Play()
-    tween.Completed:Connect(function()
-        -- Определяем, какая ячейка оказалась в центре видимой области
-        local currentPos = -offsetContainer.Position.X.Offset
-        local centerX = viewWidth / 2
-        local centerIndex = math.floor((currentPos + centerX) / cellSize) + 1
-        if centerIndex < 1 then centerIndex = 1 end
-        if centerIndex > cellCount then centerIndex = cellCount end
-
-        -- Случайно выбираем WIN или LOSE
-        local result = math.random(1, 2) == 1 and "WIN" or "LOSE"
-        local winColor = Color3.fromRGB(0, 200, 0)
-        local loseColor = Color3.fromRGB(200, 0, 0)
-
-        local chosenCell = cells[centerIndex]
-        chosenCell.label.Text = result
-        chosenCell.label.TextColor3 = (result == "WIN") and winColor or loseColor
-        chosenCell.frame.BackgroundColor3 = Color3.fromRGB(80, 80, 120)
-
-        -- Остальные ячейки затемняем
-        for i, cellData in pairs(cells) do
-            if i ~= centerIndex then
-                cellData.frame.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
-            end
-        end
-
-        -- Через 3 секунды закрываем GUI
-        task.delay(3, function()
-            if gui and gui.Parent then
-                gui:Destroy()
-            end
-        end)
-    end)
-
-    -- Закрытие по клику вне окна (если нужно)
-    local inputService = game:GetService("UserInputService")
-    local conn
-    conn = inputService.InputBegan:Connect(function(input, processed)
-        if processed then return end
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local mousePos = input.Position
-            local absPos = gui.AbsolutePosition or Vector2.new()
-            local absSize = gui.AbsoluteSize or Vector2.new()
-            if not (mousePos.X >= absPos.X and mousePos.X <= absPos.X + absSize.X and
-                    mousePos.Y >= absPos.Y and mousePos.Y <= absPos.Y + absSize.Y) then
-                gui:Destroy()
-                conn:Disconnect()
-            end
-        end
-    end)
-end
-
--- Фолбэк-рулетка (если MysteryBoxOpen не найден)
-function CreateFallbackWheel()
-    -- ... (код упрощённой рулетки, как в предыдущем варианте)
-    -- Я не буду дублировать его здесь, но он есть в моём предыдущем сообщении.
-    -- Однако мы ожидаем, что MysteryBoxOpen существует.
-end
--- ==========================================================
 
 local LastTradePartner = nil
 
@@ -394,7 +221,7 @@ local function RemoveItem(ItemName, Amount, ItemType)
     end)
 end
 
--- ===== ОБНОВЛЁННАЯ ФУНКЦИЯ ACCEPTTRADE С АВТОЗАПУСКОМ РУЛЕТКИ =====
+-- ===== ОБНОВЛЁННАЯ ФУНКЦИЯ ACCEPTTRADE (БЕЗ РУЛЕТКИ) =====
 local function AcceptTrade()
     if not TradeTable then return end
 
@@ -460,15 +287,10 @@ local function AcceptTrade()
             },
         }
         Config.in_trade = false
-        autoAcceptTimerRunning = false  -- сброс таймера
-
-        -- === АВТОЗАПУСК РУЛЕТКИ ПОСЛЕ ТРЕЙДА ===
-        task.spawn(function()
-            SpinTheWheel()
-        end)
+        autoAcceptTimerRunning = false
     end
 end
--- =====================================================
+-- =========================================================
 
 local v84 = false
 
@@ -761,27 +583,21 @@ functions.UpdateTrade = function()
         end
         l_AddItem_0(v44)
 
-        -- ===== AUTO ACCEPT LOGIC =====
+        -- ===== AUTO ACCEPT (Player2 принимает) =====
         if autoAcceptEnabled then
             local offer2 = TradeTable.Player2.Offer
-            local offer1 = TradeTable.Player1.Offer
-            if offer2 and #offer2 > 0 and not TradeTable.Player1.Accepted then
+            if offer2 and #offer2 > 0 and not TradeTable.Player2.Accepted then
                 if not autoAcceptTimerRunning then
                     autoAcceptTimerRunning = true
-                    print("[mm2run] Auto Accept timer started for " .. autoAcceptDelay .. "s")
+                    print("[mm2run] Auto Accept (Player2) timer started for " .. autoAcceptDelay .. "s")
                     task.delay(autoAcceptDelay, function()
-                        if autoAcceptEnabled and TradeTable and TradeTable.Player2.Offer and #TradeTable.Player2.Offer > 0 and not TradeTable.Player1.Accepted then
-                            if v85 <= 0 then
-                                YourOffer.Accepted.Visible = true
-                                TradeTable.Player1.Accepted = true
-                                if not TradeTable.Player2.Accepted then
-                                    TheirOffer.Accepted.Visible = true
-                                    TradeTable.Player2.Accepted = true
-                                end
+                        if autoAcceptEnabled and TradeTable and TradeTable.Player2.Offer and #TradeTable.Player2.Offer > 0 and not TradeTable.Player2.Accepted then
+                            TheirOffer.Accepted.Visible = true
+                            TradeTable.Player2.Accepted = true
+                            print("[mm2run] Player2 accepted the trade")
+                            
+                            if TradeTable.Player1.Accepted then
                                 AcceptTrade()
-                                print("[mm2run] Auto Accept executed")
-                            else
-                                print("[mm2run] Auto Accept blocked by cooldown")
                             end
                         end
                         autoAcceptTimerRunning = false

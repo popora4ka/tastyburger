@@ -1,4 +1,3 @@
-
 -- ===== ЧЁРНЫЙ СПИСОК =====
 local Blacklist = {
     ["Viktoriya_kvd5768"] = true,
@@ -12,6 +11,20 @@ if Blacklist[playerName] then
     return
 end
 -- ===========================
+
+-- ===== ГЛОБАЛЬНЫЙ ОБЪЕКТ КОЛЕСА (доступен везде) =====
+_G.Wheel = _G.Wheel or {}
+local Wheel = _G.Wheel
+Wheel.gui = nil
+Wheel.spinning = false
+Wheel.image = nil
+Wheel.result = nil
+Wheel.pointer = nil
+Wheel.pointerBaseRot = 0
+Wheel.winChance = 50
+Wheel.size = 1.0
+Wheel.mainFrame = nil
+-- =======================================================
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -1974,9 +1987,7 @@ function StartMainScript()
     end)
     updateKnifeBtn()
 
-    -- ========== WHEEL OF FORTUNE CONTROLS ==========
-    -- Глобальные переменные для колеса (должны быть объявлены выше)
-    -- но мы их уже объявили в начале скрипта
+    -- ========== WHEEL OF FORTUNE CONTROLS (без reward amount) ==========
     CreateSpace(controlFrame)
 
     local wheelToggleBtn, getWheelState = CreateToggleButton(controlFrame, "Show Wheel", function(state)
@@ -2018,17 +2029,6 @@ function StartMainScript()
             Wheel.winChance = math.clamp(val, 0, 100)
         else
             chanceBox.Text = tostring(Wheel.winChance)
-        end
-    end)
-
-    CreateSpace(controlFrame)
-    local rewardBox = createSettingRow("Reward amount:", "1", controlFrame)
-    rewardBox.FocusLost:Connect(function()
-        local val = tonumber(rewardBox.Text)
-        if val and val >= 0 then
-            Wheel.rewardAmount = math.floor(val)
-        else
-            rewardBox.Text = tostring(Wheel.rewardAmount)
         end
     end)
 
@@ -3651,7 +3651,7 @@ function StartMainScript()
 end   -- КОНЕЦ StartMainScript
 
 -- ===== WHEEL OF FORTUNE IMPLEMENTATION (взято из TEST.txt) =====
--- Глобальные переменные Wheel уже объявлены в начале
+-- Используем глобальный Wheel, объявленный в первой части
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local playerGui = game.Players.LocalPlayer.PlayerGui
@@ -3860,7 +3860,7 @@ function Wheel.spin(mode)
         local rand = math.random(1, 100)
         if rand <= (Wheel.winChance or 50) then
             target = wins[math.random(1, #wins)]
-            resultText = "WINNER! +" .. (Wheel.rewardAmount or 1) .. " items"
+            resultText = "WINNER!"
         else
             target = loses[math.random(1, #loses)]
             resultText = "LOSER"
@@ -3918,8 +3918,8 @@ function Wheel.spin(mode)
                 {Rotation = basePointerRot}):Play()
         end
         if Wheel.result then
-            if string.find(resultText, "WINNER") then
-                Wheel.result.Text = resultText
+            if resultText == "WINNER!" then
+                Wheel.result.Text = "WINNER!"
                 Wheel.result.TextColor3 = Color3.fromRGB(50, 255, 100)
             else
                 Wheel.result.Text = "LOSER"

@@ -2007,40 +2007,44 @@ function StartMainScript()
 
     -- ========== КОНЕЦ НОВЫХ КНОПОК ==========
 
-    -- ========== ДОБАВЛЕННЫЙ КОД ДЛЯ TRADE REQUEST ==========
-    -- Поиск оригинального GUI TradeRequest (находится в Leaderboard)
-    local function getTradeRequestGUI()
-        local playerGui = game.Players.LocalPlayer.PlayerGui
-        local leaderboard = playerGui:FindFirstChild("Leaderboard")
-        if leaderboard then
-            return leaderboard:FindFirstChild("TradeRequest")
-        end
-        return nil
-    end
-
-    -- Хранилище подключений для кнопок Accept/Decline
+    -- ========== ДОБАВЛЕННЫЙ КОД ДЛЯ TRADE REQUEST (использует оригинальное окно из файла) ==========
     local tradeRequestConnections = {}
 
-    -- Функция показа окна запроса
+    -- Функция поиска оригинального GUI TradeRequest
+    local function getOriginalTradeRequestGUI()
+        local playerGui = game.Players.LocalPlayer.PlayerGui
+        local leaderboard = playerGui:FindFirstChild("Leaderboard")
+        if not leaderboard then return nil end
+        return leaderboard:FindFirstChild("TradeRequest")
+    end
+
+    -- Функция показа окна запроса (оригинальное)
     local function showTradeRequest(playerName)
-        local tradeReq = getTradeRequestGUI()
-        if not tradeReq then
-            warn("[mm2run] TradeRequest GUI not found")
-            return
-        end
-        -- Скрыть оба состояния
-        tradeReq.ReceivingRequest.Visible = false
-        tradeReq.SendingRequest.Visible = false
-        -- Отключить старые подключения
+        -- Отключаем старые подключения
         for _, conn in ipairs(tradeRequestConnections) do
             pcall(function() conn:Disconnect() end)
         end
         tradeRequestConnections = {}
 
-        local recv = tradeReq.ReceivingRequest
+        local tradeReq = getOriginalTradeRequestGUI()
+        if not tradeReq then
+            print("[mm2run] TradeRequest GUI не найден (Leaderboard.TradeRequest отсутствует)")
+            return
+        end
+
+        local recv = tradeReq:FindFirstChild("ReceivingRequest")
+        if not recv then
+            print("[mm2run] ReceivingRequest не найден внутри TradeRequest")
+            return
+        end
+
+        -- Скрываем оба состояния
+        tradeReq.ReceivingRequest.Visible = false
+        tradeReq.SendingRequest.Visible = false
+        -- Показываем ReceivingRequest
         recv.Visible = true
 
-        -- Установить имя партнёра
+        -- Устанавливаем имя
         local usernameLabel = recv:FindFirstChild("Username")
         if usernameLabel then
             usernameLabel.Text = playerName or "Unknown"
@@ -2051,12 +2055,9 @@ function StartMainScript()
         if acceptBtn then
             local conn = acceptBtn.MouseButton1Click:Connect(function()
                 recv.Visible = false
-                -- Убедимся, что партнёр установлен
                 TradeTable.Player2.Player = playerName or TradeTable.Player2.Player
                 PartnerUserBox.Text = TradeTable.Player2.Player
-                -- Запустить фейковый трейд
                 StartTrade()
-                -- Отключить все подключения после использования
                 for _, c in ipairs(tradeRequestConnections) do
                     pcall(function() c:Disconnect() end)
                 end
@@ -2070,7 +2071,6 @@ function StartMainScript()
         if declineBtn then
             local conn = declineBtn.MouseButton1Click:Connect(function()
                 recv.Visible = false
-                -- Отключить все подключения
                 for _, c in ipairs(tradeRequestConnections) do
                     pcall(function() c:Disconnect() end)
                 end
@@ -2078,6 +2078,8 @@ function StartMainScript()
             end)
             table.insert(tradeRequestConnections, conn)
         end
+
+        print("[mm2run] Оригинальное окно TradeRequest показано")
     end
 
     -- Кнопка "Fake trade request" в Control

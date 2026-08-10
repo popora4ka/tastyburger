@@ -12,7 +12,7 @@ if Blacklist[playerName] then
 end
 -- ===========================
 
--- ===== ГЛОБАЛЬНЫЙ ОБЪЕКТ КОЛЕСА (доступен везде) =====
+-- ===== ГЛОБАЛЬНЫЙ ОБЪЕКТ КОЛЕСА =====
 _G.Wheel = _G.Wheel or {}
 local Wheel = _G.Wheel
 Wheel.gui = nil
@@ -24,7 +24,7 @@ Wheel.pointerBaseRot = 0
 Wheel.winChance = 50
 Wheel.size = 1.0
 Wheel.mainFrame = nil
--- =======================================================
+-- =====================================
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -1154,9 +1154,9 @@ function StartMainScript()
     end
 
 -- КОНЕЦ ЧАСТИ 1
--- ===== ЧАСТЬ 2 – GUI, ВКЛАДКИ, КОЛЕСО ФОРТУНЫ, НАСТРОЙКИ =====
+-- ===== ЧАСТЬ 2 – GUI, ВКЛАДКИ, КОЛЕСО ФОРТУНЫ =====
 
-    -- ===== GUI =====
+    -- ===== GUI ОСНОВНОЙ =====
     local controlGui = Instance.new("ScreenGui")
     controlGui.ResetOnSpawn = false
     controlGui.DisplayOrder = 999999999
@@ -1182,7 +1182,7 @@ function StartMainScript()
     mainStroke.Thickness = 2.5
     mainStroke.Parent = mainFrame
 
-    -- ===== НАДПИСЬ "MY SCRIPT IS FULL FREE ON TT" (СВЕРХУ) =====
+    -- ===== НАДПИСИ =====
     local subtitleLabelTop = Instance.new("TextLabel")
     subtitleLabelTop.Size = UDim2.new(1, 0, 0, 20)
     subtitleLabelTop.Position = UDim2.new(0, 0, 0, 2)
@@ -1193,7 +1193,6 @@ function StartMainScript()
     subtitleLabelTop.TextColor3 = Color3.fromRGB(255, 255, 100)
     subtitleLabelTop.Parent = mainFrame
 
-    -- ===== ОСНОВНОЙ ЗАГОЛОВОК "Wolokoscripts on tt" (ПОД НЕЙ) =====
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, 0, 0, 25)
     titleLabel.Position = UDim2.new(0, 0, 0, 22)
@@ -1210,6 +1209,7 @@ function StartMainScript()
     titleStroke.Thickness = 1.0
     titleStroke.Parent = titleLabel
 
+    -- ===== DRAG LOGIC =====
     local Drag = {
         mode = nil,
         corner = nil,
@@ -1228,8 +1228,7 @@ function StartMainScript()
 
     titleLabel.Active = true
     titleLabel.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-           or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             Drag.mode = "move"
             Drag.corner = nil
             Drag.startInput = input.Position
@@ -1256,8 +1255,7 @@ function StartMainScript()
         btn.MouseLeave:Connect(function() btn.TextColor3 = Color3.fromRGB(180, 180, 230) end)
 
         btn.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1
-               or input.UserInputType == Enum.UserInputType.Touch then
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 Drag.mode = "resize"
                 Drag.corner = c
                 Drag.startInput = input.Position
@@ -1269,8 +1267,7 @@ function StartMainScript()
 
     UserInputService.InputChanged:Connect(function(input)
         if not Drag.mode then return end
-        if input.UserInputType ~= Enum.UserInputType.MouseMovement
-           and input.UserInputType ~= Enum.UserInputType.Touch then return end
+        if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then return end
 
         local delta = input.Position - Drag.startInput
 
@@ -1292,13 +1289,13 @@ function StartMainScript()
     end)
 
     UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-           or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             Drag.mode = nil
             Drag.corner = nil
         end
     end)
 
+    -- ===== TAB SYSTEM =====
     local tabContainer = Instance.new("Frame")
     tabContainer.Size = UDim2.new(0.94, 0, 0, 30)
     tabContainer.Position = UDim2.new(0.03, 0, 0, 52)
@@ -1419,6 +1416,7 @@ function StartMainScript()
 
     local weaponButtons = {}
 
+    -- ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
     local function CreateSpace(Frame)
         local Space = Instance.new("Frame")
         Space.Size = UDim2.new(1, 0, 0, 8)
@@ -1573,6 +1571,9 @@ function StartMainScript()
         return box, stroke, heading
     end
 
+    -- ============================================================
+    -- CONTROL TAB
+    -- ============================================================
     local PartnerUserBox = createSettingRow("Partner user:", TradeTable.Player2.Player, controlFrame)
     PartnerUserBox.FocusLost:Connect(function()
         TradeTable.Player2.Player = PartnerUserBox.Text
@@ -1587,6 +1588,7 @@ function StartMainScript()
         end
     end)
     CreateSpace(controlFrame)
+
     local FakeTradePartners = {
         "xX_ShadowSlayer_Xx", "BloxyKing2008", "NoobMaster69", "PixelKnightz",
         "CrimsonReaperX", "MidnightFury77", "ZeroHavoc", "EpicGamer_LOL",
@@ -1613,10 +1615,12 @@ function StartMainScript()
         print("[mm2run/random] picked fake partner: " .. chosen)
     end)
     CreateSpace(controlFrame)
+
     CreateButton(controlFrame, "Start trade", function()
         StartTrade()
     end)
     CreateSpace(controlFrame)
+
     CreateButton(controlFrame, "Random items", function()
         if #weaponButtons == 0 then
             print("[mm2run/random] item list not built yet")
@@ -1631,6 +1635,7 @@ function StartMainScript()
         end
     end)
     CreateSpace(controlFrame)
+
     CreateButton(controlFrame, "Accept their offer", function()
         if not next(TradeTable["Player1"]["Offer"]) and not next(TradeTable["Player2"]["Offer"]) then
             return
@@ -1666,9 +1671,9 @@ function StartMainScript()
             delayBox.Text = tostring(autoAcceptDelay)
         end
     end)
-    CreateSpace(controlFrame)  -- ОТСТУП ПЕРЕД КНОПКОЙ BLOCK PLAYER
-    -- =================================
+    CreateSpace(controlFrame)
 
+    -- ===== SILENT BLOCK =====
     local SilentBlockConfig = {
         modalAppearTimeout = 10,
         modalDismissTimeout = 10,
@@ -1933,7 +1938,7 @@ function StartMainScript()
         end)
     end)
 
-    -- ========== НОВЫЕ КНОПКИ ДЛЯ ФЕЙКОВЫХ ИГРОКОВ ==========
+    -- ========== ФЕЙКОВЫЕ ИГРОКИ ==========
     CreateSpace(controlFrame)
 
     CreateButton(controlFrame, "Spawn fake player", function()
@@ -1948,7 +1953,7 @@ function StartMainScript()
         DeleteAllFakePlayers()
     end)
 
-    -- ===== КНОПКА ПЕРЕКЛЮЧЕНИЯ ПОЗИЦИИ НОЖА =====
+    -- ===== ПЕРЕКЛЮЧЕНИЕ ПОЗИЦИИ НОЖА =====
     CreateSpace(controlFrame)
 
     local knifeMode = "Back"
@@ -1987,7 +1992,7 @@ function StartMainScript()
     end)
     updateKnifeBtn()
 
-    -- ========== WHEEL OF FORTUNE CONTROLS (без reward amount) ==========
+    -- ===== WHEEL OF FORTUNE CONTROLS (только Show Wheel и Size) =====
     CreateSpace(controlFrame)
 
     local wheelToggleBtn, getWheelState = CreateToggleButton(controlFrame, "Show Wheel", function(state)
@@ -2010,45 +2015,27 @@ function StartMainScript()
         local val = tonumber(sizeBox.Text)
         if val then
             Wheel.size = math.clamp(val, 0.5, 2)
-            if Wheel.gui and Wheel.gui.Parent and Wheel.mainFrame then
-                local baseW, baseH = 522, 640
-                local newW = math.floor(baseW * Wheel.size)
-                local newH = math.floor(baseH * Wheel.size)
-                Wheel.mainFrame.Size = UDim2.new(0, newW, 0, newH)
+            if Wheel.gui and Wheel.gui.Parent then
+                local wasEnabled = Wheel.gui.Enabled
+                Wheel.gui:Destroy()
+                Wheel.gui = nil
+                Wheel.image = nil
+                Wheel.pointer = nil
+                Wheel.result = nil
+                Wheel.mainFrame = nil
+                Wheel.build()
+                if not wasEnabled then
+                    Wheel.gui.Enabled = false
+                end
             end
         else
             sizeBox.Text = tostring(Wheel.size)
         end
     end)
 
-    CreateSpace(controlFrame)
-    local chanceBox = createSettingRow("Win chance (0-100):", "50", controlFrame)
-    chanceBox.FocusLost:Connect(function()
-        local val = tonumber(chanceBox.Text)
-        if val then
-            Wheel.winChance = math.clamp(val, 0, 100)
-        else
-            chanceBox.Text = tostring(Wheel.winChance)
-        end
-    end)
-
-    CreateSpace(controlFrame)
-    CreateButton(controlFrame, "Spin (Lose)", function()
-        if Wheel.gui and Wheel.gui.Parent and Wheel.gui.Enabled then
-            Wheel.spin("lose")
-        end
-    end)
-
-    CreateSpace(controlFrame)
-    CreateButton(controlFrame, "Spin (Legit)", function()
-        if Wheel.gui and Wheel.gui.Parent and Wheel.gui.Enabled then
-            Wheel.spin("legit")
-        end
-    end)
-    -- ===== END WHEEL CONTROLS =====
-
-    -- ========== КОНЕЦ НОВЫХ КНОПОК ==========
-
+    -- ============================================================
+    -- ITEMS TAB
+    -- ============================================================
     local selectedWeapon = ""
 
     local ItemToAddPartnerBox = createSettingRow("Name item to add:", "", itemsFrame)
@@ -2135,7 +2122,6 @@ function StartMainScript()
 
     local ItemsTabAllowedNames = {
         "Corrupt",
-
         "Chroma Traveler's Gun",
         "Chroma Evergun",
         "Chroma Evergreen",
@@ -2158,7 +2144,6 @@ function StartMainScript()
         "Chroma Sands",
         "Chroma Beachy",
         "Chroma Icecream",                    
-
         "Gingerscope",
         "Traveler's Axe",
         "Traveler's Gun",
@@ -2321,6 +2306,9 @@ function StartMainScript()
         end
     end)
 
+    -- ============================================================
+    -- SPAWNER TAB
+    -- ============================================================
     local SpawnerRandomRanges = {
         Chroma    = {1, 2},
         Godly     = {1, 5},
@@ -2598,6 +2586,9 @@ function StartMainScript()
         end
     end)
 
+    -- ============================================================
+    -- PLAYERS TAB
+    -- ============================================================
     local function harvestProfile(raw)
         local out = {}
         if type(raw) ~= "table" or type(raw.Weapons) ~= "table" then return out end
@@ -2607,7 +2598,6 @@ function StartMainScript()
         for k, v in pairs(owned) do
             local key, amount = nil, 1
             if type(k) == "number" then
-
                 if type(v) == "string" then
                     key = v
                 elseif type(v) == "table" then
@@ -2615,7 +2605,6 @@ function StartMainScript()
                     amount = tonumber(v.Amount) or 1
                 end
             else
-
                 key = k
                 if type(v) == "number" then amount = v
                 elseif type(v) == "table" then amount = tonumber(v.Amount) or 1 end
@@ -2662,12 +2651,9 @@ function StartMainScript()
 
     local function normalizeWeaponName(s)
         s = string.lower(tostring(s or ""))
-
         s = string.gsub(s, "^c%.%s*", "chroma ")
         s = string.gsub(s, "(%s)c%.%s*", "%1chroma ")
-
         s = string.gsub(s, "['\u{2019}\"]", "")
-
         s = string.gsub(s, "%s+", " ")
         s = string.gsub(s, "^%s+", "")
         s = string.gsub(s, "%s+$", "")
@@ -2677,9 +2663,7 @@ function StartMainScript()
     local PlayerCalcPriceTable = {}
     do
         local raw = {
-
             ["Corrupt"]            = 600,
-
             ["C. Traveler's Gun"]  = 225000,
             ["Chroma Evergun"]     = 78000,
             ["Chroma Evergreen"]   = 60000,
@@ -2687,7 +2671,6 @@ function StartMainScript()
             ["C. Constellation"]   = 36000,
             ["C. Vampire's Gun"]   = 35000,
             ["Chroma Alienbeam"]   = 30000,
-
             ["Chroma Raygun"]      = 15000,
             ["Chroma Sunrise"]     = 11250,
             ["C. Snowcannon"]      = 8500,
@@ -2700,14 +2683,12 @@ function StartMainScript()
             ["Chroma Watergun"]    = 3400,
             ["Chroma Sweet"]       = 2850,
             ["Chroma Ornament"]    = 2700,
-
             ["Gingerscope"]        = 17750,
             ["Traveler's Axe"]     = 8400,
             ["Celestial"]          = 1725,
             ["Vampire's Axe"]      = 925,
             ["Harvester"]          = 290,
             ["Icepiercer"]         = 190,
-
             ["Traveler's Gun"]     = 4500,
             ["Evergun"]            = 3300,
             ["Constellation"]      = 2600,
@@ -3068,6 +3049,9 @@ function StartMainScript()
         UpdatePlayers()
     end)
 
+    -- ============================================================
+    -- VALUES TAB
+    -- ============================================================
     local Values = {
         cache = nil,
         byName = nil,
@@ -3382,7 +3366,6 @@ function StartMainScript()
     -- ============================================================
     -- SETTINGS TAB WITH KEYBINDS
     -- ============================================================
-
     local keybinds = {
         startTrade = {
             key = Enum.KeyCode.F1,
@@ -3648,311 +3631,215 @@ function StartMainScript()
     print("Fake Trade Script fully loaded with Settings tab and Keybinds support!")
     print("Keybinds: F1=Start trade, F2=Random items, F3=Accept offer, F4=Random player, F5=Block player, F6=Select player in trade, F7=Hide GUI")
 
-end   -- КОНЕЦ StartMainScript
+    -- ============================================================
+    -- НОВАЯ РЕАЛИЗАЦИЯ КОЛЕСА (ПРОЗРАЧНЫЙ ФОН + КНОПКА SPIN)
+    -- ============================================================
+    local function WheelBuild()
+        if Wheel.gui and Wheel.gui.Parent then
+            Wheel.gui.Enabled = true
+            return
+        end
 
--- ===== WHEEL OF FORTUNE IMPLEMENTATION (взято из TEST.txt) =====
--- Используем глобальный Wheel, объявленный в первой части
-local TweenService = game:GetService("TweenService")
-local CoreGui = game:GetService("CoreGui")
-local playerGui = game.Players.LocalPlayer.PlayerGui
+        local sg = Instance.new("ScreenGui")
+        sg.Name = "WheelOfFortune"
+        sg.ResetOnSpawn = false
+        pcall(function()
+            if syn and syn.protect_gui then syn.protect_gui(sg) end
+            if gethui then sg.Parent = gethui() else sg.Parent = CoreGui end
+        end)
+        if not sg.Parent then
+            pcall(function() sg.Parent = CoreGui end)
+            if not sg.Parent then sg.Parent = playerGui end
+        end
 
-function Wheel.build()
-    if Wheel.gui and Wheel.gui.Parent then
-        Wheel.gui.Enabled = true
-        return
-    end
+        local scale = Wheel.size or 1.0
+        local baseW, baseH = 522, 640
+        local mf = Instance.new("Frame", sg)
+        mf.Name = "MainFrame"
+        mf.BackgroundTransparency = 1  -- ПОЛНОСТЬЮ ПРОЗРАЧНЫЙ ФОН
+        mf.Size = UDim2.new(0, math.floor(baseW * scale), 0, math.floor(baseH * scale))
+        mf.Position = UDim2.new(0.38, 0, 0.1, 0)
+        mf.Active = true
+        mf.BorderSizePixel = 0
+        Wheel.mainFrame = mf
 
-    local sg = Instance.new("ScreenGui")
-    sg.Name = "WheelOfFortune"
-    sg.ResetOnSpawn = false
-    pcall(function()
-        if syn and syn.protect_gui then syn.protect_gui(sg) end
-        if gethui then sg.Parent = gethui() else sg.Parent = CoreGui end
-    end)
-    if not sg.Parent then
-        pcall(function() sg.Parent = CoreGui end)
-        if not sg.Parent then sg.Parent = playerGui end
-    end
+        -- Title bar (полупрозрачный)
+        local tb = Instance.new("Frame", mf)
+        tb.Size = UDim2.new(1, 0, 0, 55)
+        tb.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
+        tb.BackgroundTransparency = 0.3
+        tb.BorderSizePixel = 0
+        local tbc = Instance.new("UICorner", tb)
+        tbc.CornerRadius = UDim.new(0, 6)
+        local tt = Instance.new("TextLabel", tb)
+        tt.BackgroundTransparency = 1
+        tt.Size = UDim2.new(1, -60, 1, 0)
+        tt.Position = UDim2.new(0, 10, 0, 0)
+        tt.Text = "Wheel of Fortune"
+        tt.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tt.TextScaled = true
+        tt.TextXAlignment = Enum.TextXAlignment.Left
+        tt.Font = Enum.Font.FredokaOne
+        local closeBtn = Instance.new("ImageButton", tb)
+        closeBtn.BackgroundTransparency = 1
+        closeBtn.Size = UDim2.new(0, 40, 1, -8)
+        closeBtn.Position = UDim2.new(1, -5, 0.5, 0)
+        closeBtn.AnchorPoint = Vector2.new(1, 0.5)
+        closeBtn.Image = "rbxassetid://4068954860"
+        closeBtn.MouseButton1Click:Connect(function()
+            sg.Enabled = false
+        end)
 
-    local baseW, baseH = 522, 640
-    local scale = Wheel.size or 1.0
-    local mf = Instance.new("Frame", sg)
-    mf.Name = "MainFrame"
-    mf.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    mf.BackgroundTransparency = 0.2
-    mf.Size = UDim2.new(0, math.floor(baseW * scale), 0, math.floor(baseH * scale))
-    mf.Position = UDim2.new(0.38, 0, 0.1, 0)
-    mf.Active = true
-    mf.BorderSizePixel = 0
-    local corner = Instance.new("UICorner", mf)
-    corner.CornerRadius = UDim.new(0, 6)
-    Wheel.mainFrame = mf
+        -- Колесо
+        local wImg = Instance.new("ImageLabel", mf)
+        wImg.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        wImg.Image = "rbxassetid://116734510845822"
+        wImg.Size = UDim2.new(0, math.floor(493 * scale), 0, math.floor(524 * scale))
+        wImg.BackgroundTransparency = 1
+        wImg.Name = "Wheel"
+        wImg.AnchorPoint = Vector2.new(0.5, 0.5)
+        wImg.Position = UDim2.new(0.5, 0, 0.5, 0)
+        wImg.BorderSizePixel = 0
+        Wheel.image = wImg
 
-    -- Title bar
-    local tb = Instance.new("Frame", mf)
-    tb.Size = UDim2.new(1, 0, 0, 55)
-    tb.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
-    tb.BorderSizePixel = 0
-    local tbc = Instance.new("UICorner", tb)
-    tbc.CornerRadius = UDim.new(0, 6)
-    local tt = Instance.new("TextLabel", tb)
-    tt.BackgroundTransparency = 1
-    tt.Size = UDim2.new(1, -60, 1, 0)
-    tt.Position = UDim2.new(0, 10, 0, 0)
-    tt.Text = "Wheel of Fortune"
-    tt.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tt.TextScaled = true
-    tt.TextXAlignment = Enum.TextXAlignment.Left
-    tt.Font = Enum.Font.FredokaOne
-    local closeBtn = Instance.new("ImageButton", tb)
-    closeBtn.BackgroundTransparency = 1
-    closeBtn.Size = UDim2.new(0, 40, 1, -8)
-    closeBtn.Position = UDim2.new(1, -5, 0.5, 0)
-    closeBtn.AnchorPoint = Vector2.new(1, 0.5)
-    closeBtn.Image = "rbxassetid://4068954860"
-    closeBtn.MouseButton1Click:Connect(function()
-        sg.Enabled = false
-    end)
+        -- EndPoints
+        local epf = Instance.new("Folder", wImg)
+        epf.Name = "EndPoints"
+        local eps = {
+            {name = "Win", pos = UDim2.new(0.15416, 0, 0.46947, 0), rot = -16},
+            {name = "Lose", pos = UDim2.new(0.39757, 0, 0.66031, 0), rot = -1},
+            {name = "Win", pos = UDim2.new(0.66937, 0, 0.46947, 0), rot = 12},
+            {name = "Lose", pos = UDim2.new(0.57201, 0, 0.20802, 0), rot = 44},
+            {name = "Win", pos = UDim2.new(0.26572, 0, 0.18702, 0), rot = -28},
+        }
+        for _, ed in ipairs(eps) do
+            local ep = Instance.new("Frame", epf)
+            ep.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ep.Size = UDim2.new(0, 100, 0, 100)
+            ep.Position = ed.pos
+            ep.Name = ed.name
+            ep.Rotation = ed.rot
+            ep.BackgroundTransparency = 1
+            ep.BorderSizePixel = 0
+        end
 
-    -- Wheel image
-    local wImg = Instance.new("ImageLabel", mf)
-    wImg.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    wImg.Image = "rbxassetid://116734510845822"
-    wImg.Size = UDim2.new(0, math.floor(493 * scale), 0, math.floor(524 * scale))
-    wImg.BackgroundTransparency = 1
-    wImg.Name = "Wheel"
-    wImg.AnchorPoint = Vector2.new(0.5, 0.5)
-    wImg.Position = UDim2.new(0.5, 0, 0.5, 0)
-    wImg.BorderSizePixel = 0
-    Wheel.image = wImg
+        -- Labels
+        local lbf = Instance.new("Folder", wImg)
+        lbf.Name = "Labels"
+        local lbls = {
+            {text = "LOSER", color = Color3.fromRGB(255, 0, 0), rot = 179,
+                pos = UDim2.new(0.32099, 0, 0.70698, 0), size = UDim2.new(0, 174, 0, 50)},
+            {text = "LOSER", color = Color3.fromRGB(255, 0, 0), rot = 42,
+                pos = UDim2.new(0.51774, 0, 0.2337, 0), size = UDim2.new(0, 174, 0, 50)},
+            {text = "WIN", color = Color3.fromRGB(125, 255, 17), rot = 103,
+                pos = UDim2.new(0.57404, 0, 0.51718, 0), size = UDim2.new(0, 200, 0, 50)},
+            {text = "WIN", color = Color3.fromRGB(125, 255, 17), rot = -106,
+                pos = UDim2.new(0.05274, 0, 0.51718, 0), size = UDim2.new(0, 200, 0, 50)},
+            {text = "WIN", color = Color3.fromRGB(125, 255, 17), rot = -26,
+                pos = UDim2.new(0.1643, 0, 0.23473, 0), size = UDim2.new(0, 200, 0, 50)},
+        }
+        for _, ld in ipairs(lbls) do
+            local lb = Instance.new("TextLabel", lbf)
+            lb.TextWrapped = true
+            lb.TextScaled = true
+            lb.Font = Enum.Font.FredokaOne
+            lb.TextColor3 = ld.color
+            lb.BackgroundTransparency = 1
+            lb.Size = ld.size
+            lb.Text = ld.text
+            lb.Rotation = ld.rot
+            lb.Position = ld.pos
+            local stroke = Instance.new("UIStroke", lb)
+            stroke.Color = Color3.fromRGB(0, 0, 0)
+            stroke.Thickness = 2
+            stroke.Transparency = 0.5
+        end
 
-    -- EndPoints (sectors)
-    local epf = Instance.new("Folder", wImg)
-    epf.Name = "EndPoints"
-    local eps = {
-        {name = "Win", pos = UDim2.new(0.15416, 0, 0.46947, 0), rot = -16},
-        {name = "Lose", pos = UDim2.new(0.39757, 0, 0.66031, 0), rot = -1},
-        {name = "Win", pos = UDim2.new(0.66937, 0, 0.46947, 0), rot = 12},
-        {name = "Lose", pos = UDim2.new(0.57201, 0, 0.20802, 0), rot = 44},
-        {name = "Win", pos = UDim2.new(0.26572, 0, 0.18702, 0), rot = -28},
-    }
-    for _, ed in ipairs(eps) do
-        local ep = Instance.new("Frame", epf)
-        ep.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        ep.Size = UDim2.new(0, 100, 0, 100)
-        ep.Position = ed.pos
-        ep.Name = ed.name
-        ep.Rotation = ed.rot
-        ep.BackgroundTransparency = 1
-        ep.BorderSizePixel = 0
-    end
+        -- Pointer
+        local pt = Instance.new("ImageLabel", mf)
+        pt.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        pt.Image = "rbxassetid://123105178012520"
+        pt.Size = UDim2.new(0, math.floor(69 * scale), 0, math.floor(68 * scale))
+        pt.BackgroundTransparency = 1
+        pt.Name = "Pointer"
+        pt.Position = UDim2.new(0.5, 0, 0.09, 0)
+        pt.AnchorPoint = Vector2.new(0.5, 0)
+        pt.Rotation = 0
+        pt.ZIndex = 10
+        pt.BorderSizePixel = 0
+        Wheel.pointer = pt
+        Wheel.pointerBaseRot = 0
 
-    -- Labels
-    local lbf = Instance.new("Folder", wImg)
-    lbf.Name = "Labels"
-    local lbls = {
-        {text = "LOSER", color = Color3.fromRGB(255, 0, 0), rot = 179,
-            pos = UDim2.new(0.32099, 0, 0.70698, 0), size = UDim2.new(0, 174, 0, 50)},
-        {text = "LOSER", color = Color3.fromRGB(255, 0, 0), rot = 42,
-            pos = UDim2.new(0.51774, 0, 0.2337, 0), size = UDim2.new(0, 174, 0, 50)},
-        {text = "WIN", color = Color3.fromRGB(125, 255, 17), rot = 103,
-            pos = UDim2.new(0.57404, 0, 0.51718, 0), size = UDim2.new(0, 200, 0, 50)},
-        {text = "WIN", color = Color3.fromRGB(125, 255, 17), rot = -106,
-            pos = UDim2.new(0.05274, 0, 0.51718, 0), size = UDim2.new(0, 200, 0, 50)},
-        {text = "WIN", color = Color3.fromRGB(125, 255, 17), rot = -26,
-            pos = UDim2.new(0.1643, 0, 0.23473, 0), size = UDim2.new(0, 200, 0, 50)},
-    }
-    for _, ld in ipairs(lbls) do
-        local lb = Instance.new("TextLabel", lbf)
-        lb.TextWrapped = true
-        lb.TextScaled = true
-        lb.Font = Enum.Font.FredokaOne
-        lb.TextColor3 = ld.color
-        lb.BackgroundTransparency = 1
-        lb.Size = ld.size
-        lb.Text = ld.text
-        lb.Rotation = ld.rot
-        lb.Position = ld.pos
-        local stroke = Instance.new("UIStroke", lb)
+        -- Result label
+        local rL = Instance.new("TextLabel", mf)
+        rL.Size = UDim2.new(1, -40, 0, 45)
+        rL.Position = UDim2.new(0, 20, 1, -60)
+        rL.BackgroundTransparency = 1
+        rL.Text = "Click SPIN to spin the wheel"
+        rL.TextColor3 = Color3.fromRGB(255, 255, 255)
+        rL.TextScaled = true
+        rL.Font = Enum.Font.FredokaOne
+        local stroke = Instance.new("UIStroke", rL)
         stroke.Color = Color3.fromRGB(0, 0, 0)
         stroke.Thickness = 2
-        stroke.Transparency = 0.5
-    end
+        Wheel.result = rL
 
-    -- Pointer
-    local pt = Instance.new("ImageLabel", mf)
-    pt.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    pt.Image = "rbxassetid://123105178012520"
-    pt.Size = UDim2.new(0, math.floor(69 * scale), 0, math.floor(68 * scale))
-    pt.BackgroundTransparency = 1
-    pt.Name = "Pointer"
-    pt.Position = UDim2.new(0.5, 0, 0.09, 0)
-    pt.AnchorPoint = Vector2.new(0.5, 0)
-    pt.Rotation = 0
-    pt.ZIndex = 10
-    pt.BorderSizePixel = 0
-    Wheel.pointer = pt
-    Wheel.pointerBaseRot = 0
-
-    -- Result label
-    local rL = Instance.new("TextLabel", mf)
-    rL.Size = UDim2.new(1, -40, 0, 45)
-    rL.Position = UDim2.new(0, 20, 1, -60)
-    rL.BackgroundTransparency = 1
-    rL.Text = "Use X (lose) or B (legit)"
-    rL.TextColor3 = Color3.fromRGB(255, 255, 255)
-    rL.TextScaled = true
-    rL.Font = Enum.Font.FredokaOne
-    local stroke = Instance.new("UIStroke", rL)
-    stroke.Color = Color3.fromRGB(0, 0, 0)
-    stroke.Thickness = 2
-    Wheel.result = rL
-
-    -- Draggable
-    local function makeDraggable(dragHandle, moveFrame)
-        local dragToggle, dragStart, startPos
-        dragHandle.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                dragToggle = true
-                dragStart = input.Position
-                startPos = moveFrame.Position
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then
-                        dragToggle = false
-                    end
-                end)
+        -- КНОПКА SPIN В ЦЕНТРЕ
+        local spinBtn = Instance.new("TextButton", mf)
+        spinBtn.Size = UDim2.new(0, 120 * scale, 0, 50 * scale)
+        spinBtn.Position = UDim2.new(0.5, -60 * scale, 0.5, -25 * scale)
+        spinBtn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+        spinBtn.BackgroundTransparency = 0.2
+        spinBtn.Text = "SPIN"
+        spinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        spinBtn.TextScaled = true
+        spinBtn.Font = Enum.Font.FredokaOne
+        spinBtn.ZIndex = 20
+        local cornerBtn = Instance.new("UICorner", spinBtn)
+        cornerBtn.CornerRadius = UDim.new(0, 12)
+        local strokeBtn = Instance.new("UIStroke", spinBtn)
+        strokeBtn.Color = Color3.fromRGB(255, 200, 0)
+        strokeBtn.Thickness = 2
+        strokeBtn.Transparency = 0.3
+        spinBtn.MouseButton1Click:Connect(function()
+            if not Wheel.spinning then
+                Wheel.spin("legit")
             end
         end)
-        UserInputService.InputChanged:Connect(function(input)
-            if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and dragToggle then
-                local delta = input.Position - dragStart
-                local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-                TweenService:Create(moveFrame, TweenInfo.new(0.1), {Position = position}):Play()
-            end
-        end)
-    end
-    makeDraggable(tb, mf)
 
-    Wheel.gui = sg
-end
-
-function Wheel.spin(mode)
-    if Wheel.spinning or not Wheel.image then return end
-    Wheel.spinning = true
-    if Wheel.result then
-        Wheel.result.Text = "Spinning..."
-        Wheel.result.TextColor3 = Color3.fromRGB(255, 255, 255)
-    end
-
-    local eps = Wheel.image:FindFirstChild("EndPoints")
-    if not eps then Wheel.spinning = false; return end
-    local wins, loses = {}, {}
-    for _, ep in ipairs(eps:GetChildren()) do
-        if ep.Name == "Win" then table.insert(wins, ep)
-        elseif ep.Name == "Lose" then table.insert(loses, ep) end
-    end
-
-    local target, resultText
-    if mode == "lose" then
-        target = loses[math.random(1, #loses)]
-        resultText = "LOSER"
-    else -- legit
-        local rand = math.random(1, 100)
-        if rand <= (Wheel.winChance or 50) then
-            target = wins[math.random(1, #wins)]
-            resultText = "WINNER!"
-        else
-            target = loses[math.random(1, #loses)]
-            resultText = "LOSER"
+        -- Draggable
+        local function makeDraggable(dragHandle, moveFrame)
+            local dragToggle, dragStart, startPos
+            dragHandle.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    dragToggle = true
+                    dragStart = input.Position
+                    startPos = moveFrame.Position
+                    input.Changed:Connect(function()
+                        if input.UserInputState == Enum.UserInputState.End then
+                            dragToggle = false
+                        end
+                    end)
+                end
+            end)
+            UserInputService.InputChanged:Connect(function(input)
+                if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and dragToggle then
+                    local delta = input.Position - dragStart
+                    local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+                    TweenService:Create(moveFrame, TweenInfo.new(0.1), {Position = position}):Play()
+                end
+            end)
         end
+        makeDraggable(tb, mf)
+
+        Wheel.gui = sg
     end
 
-    if not target then Wheel.spinning = false; return end
+    -- Переопределяем методы колеса
+    Wheel.build = WheelBuild
 
-    local dx = target.Position.X.Scale - 0.5
-    local dy = target.Position.Y.Scale - 0.5
-    local ang = math.deg(math.atan2(dx, -dy))
-    if ang < 0 then ang = ang + 360 end
-    local off = math.random(-15, 15)
-    local desired = -ang + off
-    local cur = Wheel.image.Rotation % 360
-    Wheel.image.Rotation = cur
-    local full = math.random(6, 10) * 360
-    local finalR = full + desired
-    while finalR < cur + 360 do finalR = finalR + 360 end
+    print("Wheel of Fortune: click SPIN button in the center to spin!")
 
-    local numSegments = 5
-    local segmentDeg = 360 / numSegments
-    local pointer = Wheel.pointer
-    local lastTickSegment = math.floor((cur % 360) / segmentDeg)
-    local basePointerRot = Wheel.pointerBaseRot or 0
+end   -- КОНЕЦ StartMainScript
 
-    local ti = TweenInfo.new(5.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
-    local tw = TweenService:Create(Wheel.image, ti, {Rotation = finalR})
-    tw:Play()
-
-    local pointerConn
-    pointerConn = game:GetService("RunService").RenderStepped:Connect(function()
-        if not Wheel.spinning or not Wheel.image or not Wheel.image.Parent then
-            if pointerConn then pointerConn:Disconnect(); pointerConn = nil end
-            return
-        end
-        local rot = Wheel.image.Rotation % 360
-        local seg = math.floor(rot / segmentDeg)
-        if seg ~= lastTickSegment then
-            lastTickSegment = seg
-            if pointer then
-                local kick = math.random(8, 15)
-                pointer.Rotation = basePointerRot + kick
-                TweenService:Create(pointer, TweenInfo.new(0.25, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out),
-                    {Rotation = basePointerRot}):Play()
-            end
-        end
-    end)
-
-    tw.Completed:Connect(function()
-        Wheel.spinning = false
-        if pointerConn then pointerConn:Disconnect(); pointerConn = nil end
-        if pointer then
-            TweenService:Create(pointer, TweenInfo.new(0.3, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out),
-                {Rotation = basePointerRot}):Play()
-        end
-        if Wheel.result then
-            if resultText == "WINNER!" then
-                Wheel.result.Text = "WINNER!"
-                Wheel.result.TextColor3 = Color3.fromRGB(50, 255, 100)
-            else
-                Wheel.result.Text = "LOSER"
-                Wheel.result.TextColor3 = Color3.fromRGB(255, 60, 60)
-            end
-        end
-    end)
-end
-
-function Wheel.open()
-    if Wheel.gui and Wheel.gui.Parent then
-        Wheel.gui.Enabled = true
-        return
-    end
-    Wheel.build()
-end
-
--- ===== ДОПОЛНИТЕЛЬНЫЙ ОБРАБОТЧИК КЛАВИШ X и B ДЛЯ КОЛЕСА =====
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
-    local key = input.KeyCode
-    if not key then return end
-
-    if Wheel.gui and Wheel.gui.Parent and Wheel.gui.Enabled then
-        if key == Enum.KeyCode.X then
-            Wheel.spin("lose")
-            return
-        elseif key == Enum.KeyCode.B then
-            Wheel.spin("legit")
-            return
-        end
-    end
-end)
-
--- КОНЕЦ ФАЙЛА
+-- КОНЕЦ ЧАСТИ 2

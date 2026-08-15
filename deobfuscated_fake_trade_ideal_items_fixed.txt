@@ -44,19 +44,7 @@ if Blacklist[playerName] then
 end
 -- ===========================
 
--- ===== ГЛОБАЛЬНЫЙ ОБЪЕКТ КОЛЕСА =====
-_G.Wheel = _G.Wheel or {}
-local Wheel = _G.Wheel
-Wheel.gui = nil
-Wheel.spinning = false
-Wheel.image = nil
-Wheel.result = nil
-Wheel.pointer = nil
-Wheel.pointerBaseRot = 0
-Wheel.winChance = 50
-Wheel.size = 1.0
-Wheel.mainFrame = nil
-Wheel.spinBtn = nil
+
 -- =====================================
 
 local Players = game:GetService("Players")

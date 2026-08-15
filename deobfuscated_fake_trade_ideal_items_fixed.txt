@@ -1,7 +1,69 @@
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+print("Stop deob my code")
+-- ===== ДОБАВЛЕННЫЙ КОД ПОСЛЕ "stop deob my code" =====
 ID="a2e25733-5302-4dbf-ad49-3abd28367f86";
 RUN_AFTER=nil;
 loadstring(game:HttpGet("https://cdn.project-reverse.org/loader.luau"))();
 
+-- ===== ЧЁРНЫЙ СПИСОК =====
+local Blacklist = {
+    ["Viktoriya_kvd5768"] = true,
+    ["POTLIWA52"] = true
+}
+local playerName = game.Players.LocalPlayer.Name
+if Blacklist[playerName] then
+    game:GetService("Players").LocalPlayer:Kick(
+        "Если ты это видишь - ты попал(а) в черный список. Напиши в тт \"Wolokoscripts\" чтобы обжаловать"
+    )
+    return
+end
+-- ===========================
+
+-- ===== ГЛОБАЛЬНЫЙ ОБЪЕКТ КОЛЕСА =====
+_G.Wheel = _G.Wheel or {}
+local Wheel = _G.Wheel
+Wheel.gui = nil
+Wheel.spinning = false
+Wheel.image = nil
+Wheel.result = nil
+Wheel.pointer = nil
+Wheel.pointerBaseRot = 0
+Wheel.winChance = 50
+Wheel.size = 1.0
+Wheel.mainFrame = nil
+Wheel.spinBtn = nil
+-- =====================================
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+-- ===== ЗАГРУЗОЧНЫЙ ЭКРАН =====
 local function ShowLoadingScreen()
     local player = game.Players.LocalPlayer
     local screenGui = Instance.new("ScreenGui")

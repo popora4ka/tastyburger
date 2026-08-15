@@ -1566,7 +1566,7 @@ do
 														Offer = {},
 													},
 													Player2 = {
-														Player = "m0_3a",
+														Player = "Woloko",
 														Accepted = false,
 														Offer = {},
 													},

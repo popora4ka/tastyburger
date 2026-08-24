@@ -746,7 +746,7 @@ local function handleResult()
 	local playerGui = PlayerGui
 	local GetChildren = playerGui.GetChildren
 
-	for _, item in ipairsFunction(GetChildren(playerGui)), GetChildren, playerGui do
+	for _, item in ipairsFunction(GetChildren(playerGui)) do
 		if item:IsA("ScreenGui", ipairsResult, resultState, secondaryResultState, alternateResultState) and item.Enabled then
 			local resultFlag = false
 			local flag = false

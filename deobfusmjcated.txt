@@ -669,7 +669,7 @@ local function secondaryUpdateInstanceProperties()
 	local tweenService = TweenService
 	local Create = tweenService.Create
 	local frame = Frame
-	local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+	local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 updateInstancePropertiesState, secondaryUpdateInstancePropertiesState);
 
 	({}).Position = UDim2.new(0.5, -270, 0, -200, alternateUpdateInstancePropertiesState, additionalInstancePropertiesState, fallbackUpdateInstancePropertiesState, nestedUpdateInstancePropertiesState)

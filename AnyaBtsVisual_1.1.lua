@@ -1,6 +1,3 @@
--- Crystal Hub Visuals plugin
--- UI: odh_shared_plugins / PluginExample API
-
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -10,6 +7,19 @@ local Stats = game:GetService("Stats")
 
 local LocalPlayer = Players.LocalPlayer
 
+
+local function detectPhone()
+    return UserInputService.TouchEnabled
+        and not UserInputService.KeyboardEnabled
+end
+
+local IS_PHONE = detectPhone()
+local QUALITY = IS_PHONE and 0.6 or 1
+
+local function quantity(count, minimum)
+    minimum = minimum or 1
+    return math.max(minimum, math.floor(count * QUALITY + 0.5))
+end
 -- Device category used for UI and graphics quality selection.
 local function getDeviceCategory()
     if UserInputService.GamepadEnabled and not UserInputService.KeyboardEnabled then
@@ -2309,17 +2319,6 @@ local function setFootprints(enabled)
     end
 end
 
-local graphicsSection = shared.AddSection('Graphics')
-graphicsSection:AddLabel('Device: ' .. DEVICE_CATEGORY)
-graphicsSection:AddLabel('Current quality: ' .. string.format('%.2f', QUALITY))
-graphicsSection:AddDropdown('Quality Override', {'Auto', '0.4', '0.5', '0.6', '0.75', '0.85', '1.0'}, function(value)
-    if value == 'Auto' then
-        pcall(function() LocalPlayer:SetAttribute('QualityOverride', nil) end)
-        QUALITY = detectBaseQuality()
-    else
-        setQualityOverride(tonumber(value))
-    end
-end)
 
 local extrasSection = shared.AddSection('Visual Extras')
 extrasSection:AddToggle('Forcefield', function(value) setForceField(value) end)
